@@ -1,0 +1,11 @@
+{
+    "name": "Section",
+    "alias": "section",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Section\\Providers\\SectionServiceProvider"
+    ],
+    "files": []
+}

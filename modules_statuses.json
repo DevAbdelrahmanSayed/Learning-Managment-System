@@ -1,0 +1,10 @@
+{
+    "Teacher": true,
+    "User": true,
+    "Admin": true,
+    "Section": true,
+    "Course": true,
+    "Category": true,
+    "Video": true,
+    "ProfileTeacher": true
+}

@@ -1,0 +1,39 @@
+<?php
+
+namespace Modules\Course\Http\Requests;
+
+use App\Helpers\ApiValidationHelper;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+class CourseRequest extends FormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'title' => 'required|string|max:20',
+            'description' => 'required|string|max:255',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id'=>'required'
+        ];
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        ApiValidationHelper::failedValidation($validator);
+    }
+
+
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+}
