@@ -23,10 +23,10 @@ class VideoController extends Controller
         }
 
         // Get the authenticated teacher's ID
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
+        $authenticatedTeacherId = Auth::guard('teacher')->user()->id;
 
         // Check if the teacher is authenticated
-        if ($section !== $authenticatedTeacher || empty($authenticatedTeacher)) {
+        if ($section->teacher_id !== $authenticatedTeacherId || empty($authenticatedTeacherId)) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this video', []);
         }
 
@@ -39,7 +39,7 @@ class VideoController extends Controller
             'description' => $request->description,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
             'section_id' => $sectionId,
-            'teacher_id' =>  $authenticatedTeacher,
+            'teacher_id' =>  $authenticatedTeacherId,
             'created_at' => now(),
             'updated_at' => now()
         ];

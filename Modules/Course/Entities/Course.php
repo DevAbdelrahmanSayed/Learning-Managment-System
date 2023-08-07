@@ -18,7 +18,6 @@ class Course extends Model
         'slug',
         'category_id',
         'teacher_id'
-
     ];
 
     protected static function newFactory()

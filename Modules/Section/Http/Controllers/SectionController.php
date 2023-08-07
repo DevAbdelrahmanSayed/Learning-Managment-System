@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Course\Entities\Course;
 use Modules\Section\Http\Requests\SectionRequest;
+use Modules\Section\Transformers\CourseResource;
 use Modules\Section\Transformers\SectionResource;
 
 class SectionController extends Controller
@@ -51,7 +52,7 @@ class SectionController extends Controller
 
         // Check if the course exists
         if (!$course) {
-            return ApiResponse::sendResponse(404, 'Course not found', []);
+            return ApiResponse::sendResponse(200, 'Course not found', []);
         }
 
         // Get the authenticated teacher's ID
@@ -63,15 +64,15 @@ class SectionController extends Controller
         }
 
         // Get the course with relation one to many (sections and videos)
-        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'teachers')->first();
+        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'teachers')->get();
 
 
         // Check if the course exists and belongs to the authenticated teacher
-        if (!$courseWithSectionsAndVideos) {
-            return ApiResponse::sendResponse(404, 'Course not found', []);
+        if (! $courseWithSectionsAndVideos) {
+            return ApiResponse::sendResponse(200, 'Course not found', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Sections and videos for the course retrieved successfully', SectionResource::collection($courseWithSectionsAndVideos));
+        return ApiResponse::sendResponse(200, 'Sections and videos for the course retrieved successfully', CourseResource::collection($courseWithSectionsAndVideos));
     }
 
 
