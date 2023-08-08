@@ -9,21 +9,23 @@ class SectionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param \Illuminate\Http\Request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
-
     public function toArray($request)
     {
+        if ($this->relationLoaded('videos')) {
+            $videosUrls = $this->videos->pluck('videoUrl')->toArray();
+        } else {
+            $videosUrls = [];
+        }
 
-                return [
-                    'section_id' => $this->id,
-                    'section_title' => $this->title,
-                    'section_description' => $this->description,
-                    'section_videos' => $this->videos->videoUrl,
-                    'teacher_name' => $this->teachers->name,
-                ];
 
+        return [
+            'Section Id' => $this->id,
+            'Title' => $this->title,
+            'Desctiption' => $this->description,
+            'Videos Urls' => $videosUrls
+        ];
     }
 }
-

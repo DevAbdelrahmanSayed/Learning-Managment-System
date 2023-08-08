@@ -11,6 +11,11 @@ use Modules\Video\Http\Requests\VideoRequest;
 
 class VideoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth:teacher']);
+    }
+
 
     public function create(VideoRequest $request, $sectionId)
     {
@@ -26,7 +31,7 @@ class VideoController extends Controller
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
 
         // Check if the teacher is authenticated
-        if ($section !== $authenticatedTeacher || empty($authenticatedTeacher)) {
+        if ($section->teacher_id !== $authenticatedTeacher || empty($authenticatedTeacher)) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this video', []);
         }
 

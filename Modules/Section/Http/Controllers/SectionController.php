@@ -12,6 +12,10 @@ use Modules\Section\Transformers\SectionResource;
 
 class SectionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth:teacher']);
+    }
     // #--- create a new section ---#
     public function create(SectionRequest $request, $courseId)
     {
@@ -63,7 +67,7 @@ class SectionController extends Controller
         }
 
         // Get the course with relation one to many (sections and videos)
-        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'teachers')->first();
+        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'teachers')->get();
 
 
         // Check if the course exists and belongs to the authenticated teacher
