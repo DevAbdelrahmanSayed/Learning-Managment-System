@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Course\Http\Controllers\CourseController;
+use Modules\Course\Http\Controllers\CoursexController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,5 @@ use Modules\Course\Http\Controllers\CourseController;
 */
 
 
-Route::prefix('course')->controller(CourseController::class)->group(function () {
-    Route::post('/create', 'create');
-    Route::get('/showAll', 'show');
-});
+Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher']);
+

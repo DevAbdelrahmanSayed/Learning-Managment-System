@@ -15,6 +15,7 @@ class Section extends Model
     protected $fillable = [
         'title',
         'description',
+        'course_id'
     ];
 
     protected static function newFactory()

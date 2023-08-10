@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('photo');
+            $table->string('price');
             $table->boolean('savedCourse')->default(false);
             $table->string('slug');
             $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();

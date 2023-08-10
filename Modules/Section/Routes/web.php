@@ -12,5 +12,5 @@
 */
 
 Route::prefix('section')->group(function() {
-    Route::get('/', 'SectionController@index');
+    Route::get('/', 'SectiosnController@index');
 });

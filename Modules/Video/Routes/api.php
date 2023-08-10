@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Video\Http\Controllers\VideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::prefix('course')->controller(\Modules\Video\Http\Controllers\VideoController::class)->group(function () {
-    Route::post('create/{sectionId}/Video', 'create');
 
-});
+
+Route::apiResource('videos', VideoController::class)->middleware(['auth:teacher']);

@@ -3,6 +3,8 @@
 namespace Modules\Video\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,16 +13,18 @@ use Modules\Video\Http\Requests\VideoRequest;
 
 class VideoController extends Controller
 {
-    public function __construct()
+
+    public function index()
     {
-        $this->middleware(['auth:teacher']);
+        //
     }
 
 
-    public function create(VideoRequest $request, $sectionId)
+    public function store(VideoRequest $request)
     {
+
         // Find the sectionId
-        $section = Section::find($sectionId);
+        $section = Section::find($request->section_id);
 
         // Check if the sectionId does not exist
         if (!$section) {
@@ -43,7 +47,7 @@ class VideoController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
-            'section_id' => $sectionId,
+            'section_id' =>$request->section_id,
             'teacher_id' =>  $authenticatedTeacher,
             'created_at' => now(),
             'updated_at' => now()
@@ -59,4 +63,22 @@ class VideoController extends Controller
         return ApiResponse::sendResponse(200, 'Failed to upload the Video', []);
     }
 
+
+
+    public function show($id)
+    {
+        //
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+
+    public function destroy($id)
+    {
+        //
+    }
 }

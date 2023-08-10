@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Section\Http\Controllers\SectionController;
+use Modules\Section\Http\Controllers\SectiosnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,8 +16,8 @@ use Modules\Section\Http\Controllers\SectionController;
 |
 */
 
-Route::prefix('course')->controller(SectionController::class)->group(function () {
-    Route::post('create/{courseId}/section', 'create');
-    Route::get('all/{courseId}/course', 'allCourse');
-});
+
+
+Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher']);
+
 

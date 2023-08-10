@@ -10,14 +10,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\Course\Entities\Course;
-use Modules\Course\Transformers\CourseResource;
+use Modules\Course\Http\Requests\CourseRequest;
+use Modules\Section\Transformers\CourseResource;
+
 
 class CourseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Response
-     */
+
     public function index()
     {
         $allCourses = Course::with('teachers')->latest()->paginate(2);
@@ -47,16 +46,11 @@ class CourseController extends Controller
 
         return ApiResponse::sendResponse(200, 'No courses Available', []);
     }
-    
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
+
+
+    public function store(CourseRequest $request)
     {
-
         // insert the photo
         $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
         //we get the data from the form
@@ -80,32 +74,21 @@ class CourseController extends Controller
 
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
+
+    public function show(Request $request ,$Id)
     {
-        //
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
+
+
+
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Response
-     */
+
     public function destroy($id)
     {
         //

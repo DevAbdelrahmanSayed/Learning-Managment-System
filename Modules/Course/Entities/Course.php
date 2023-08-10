@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Section\Entities\Section;
 use Modules\Teacher\Entities\Teacher;
+use Modules\Video\Entities\Video;
 
 class Course extends Model
 {
@@ -16,6 +17,7 @@ class Course extends Model
         'description',
         'photo',
         'slug',
+        'price',
         'category_id',
         'teacher_id'
     ];
@@ -34,4 +36,5 @@ class Course extends Model
         return $this->hasMany(Section::class,'course_id');
 
     }
+
 }
