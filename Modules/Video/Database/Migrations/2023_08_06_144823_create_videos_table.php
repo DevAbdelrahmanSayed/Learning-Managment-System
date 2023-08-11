@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('videoUrl');
             $table->foreignId('section_id')->references('id')->on('sections')->cascadeOnDelete();
+
             $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
             $table->timestamps();
         });

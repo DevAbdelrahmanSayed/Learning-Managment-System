@@ -10,7 +10,10 @@ class file extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fileUrl'];
+    protected $fillable = [
+        'fileUrl',
+        'course_id',
+    ];
 
     protected static function newFactory()
     {

@@ -3,11 +3,10 @@
 namespace Modules\Course\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\CourseRequest;
@@ -48,12 +47,10 @@ class CourseController extends Controller
     }
 
 
-
     public function store(CourseRequest $request)
     {
-        // insert the photo
+
         $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
-        //we get the data from the form
         $data = [
             'title' => $request->title,
             'description' => $request->description,
@@ -61,11 +58,9 @@ class CourseController extends Controller
             'price' => $request->price,
             'category_id' => $request->category_id,
             'created_at' => now(),
-            'updated_at' => now(),
             'slug' => Str::slug($request->title) . '.' . Str::uuid(),
             'teacher_id' => Auth::guard('teacher')->user()->id
         ];
-        //insert the data in courses table using query builder
         $course = DB::table('courses')->insert($data);
         if ($course) {
             return ApiResponse::sendResponse(201, 'your courses created successfully', []);
@@ -75,22 +70,66 @@ class CourseController extends Controller
     }
 
 
-    public function show(Request $request ,$Id)
+    public function show(CourseRequest $request,)
     {
-
     }
 
 
-
-
-    public function update(Request $request, $id)
+    public function update(CourseRequest $request, $courseId)
     {
-        //
+        $course =DB::table('courses')->find($courseId);
+        if (!$course) {
+            return ApiResponse::sendResponse(404, 'Course not found', []);
+        }
+        $authenticatedTeacherId = Auth::guard('teacher')->id();
+        if ($course->teacher_id !== $authenticatedTeacherId) {
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this section', []);
+        }
+        $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
+
+        if ($course->photo) {
+            $existingPhotoPath = basename(parse_url($course->photo, PHP_URL_PATH));
+            if (Storage::disk('s3')->exists("course_photos/photo/{$existingPhotoPath}")) {
+                Storage::disk('s3')->delete("course_photos/photo/{$existingPhotoPath}");
+            }
+        }
+
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'photo' => "https://online-bucket.s3.amazonaws.com/$photoPath",
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'updated_at' => now(),
+        ];
+
+        $course = DB::table('courses')->where('id', $courseId)->update($data);
+        if ($course) {
+            return ApiResponse::sendResponse(200, 'course updated successfully', []);
+        }
+        return ApiResponse::sendResponse(200, 'Course updated successfully', []);
     }
 
 
-    public function destroy($id)
+    public function destroy($courseId)
     {
-        //
+        $course =DB::table('courses')->find($courseId);
+
+        if (!$course) {
+            return ApiResponse::sendResponse(200, 'course not found', []);
+        }
+        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
+        if ($course->teacher_id !== $authenticatedTeacher) {
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this course', []);
+        }
+        if ($course->photo) {
+            $existingPhotoPath = basename(parse_url($course->photo, PHP_URL_PATH));
+            if (Storage::disk('s3')->exists("course_photos/photo/{$existingPhotoPath}")) {
+                Storage::disk('s3')->delete("course_photos/photo/{$existingPhotoPath}");
+            }
+        }
+            DB::table('courses')->where('id', $courseId)->delete();
+            return ApiResponse::sendResponse(200, 'course deleted successfully', []);
+
     }
 }
