@@ -51,7 +51,7 @@ class SectionController extends Controller
 
     public function show($courseId)
     {
-        $course = Course::find($courseId);
+        $course = Course::where('id', $courseId)->with('sections.videos', 'sections.files', 'teachers')->get();
 
         if (!$course) {
             return ApiResponse::sendResponse(200, 'Course not found', []);
@@ -61,13 +61,8 @@ class SectionController extends Controller
         if ($course->teacher_id !== $authenticatedTeacherId) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
         }
-        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'sections.files', 'teachers')->get();
 
-        if (!$courseWithSectionsAndVideos) {
-            return ApiResponse::sendResponse(200, 'Course not found', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Sections and videos and files for the course retrieved successfully', CourseResource::collection($courseWithSectionsAndVideos));
+        return ApiResponse::sendResponse(200, 'Sections and videos and files for the course retrieved successfully', CourseResource::collection($course));
     }
 
 
