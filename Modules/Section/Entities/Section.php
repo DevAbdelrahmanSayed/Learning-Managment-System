@@ -5,6 +5,7 @@ namespace Modules\Section\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Course\Entities\Course;
+use Modules\File\Entities\file;
 use Modules\Video\Entities\Video;
 
 class Section extends Model
@@ -30,6 +31,11 @@ class Section extends Model
     public function Videos()
     {
         return $this->hasMany(Video::class,'section_id');
+
+    }
+    public function files()
+    {
+        return $this->hasMany(File::class,'section_id');
 
     }
 }

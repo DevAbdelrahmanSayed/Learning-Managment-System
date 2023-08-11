@@ -21,6 +21,7 @@ class SectionResource extends JsonResource
                     'section_title' => $this->title,
                     'section_description' => $this->description,
                     'section_videos' => $this->videos->pluck('videoUrl'),
+                    'section_Files' => $this->files->pluck('fileUrl'),
                 ];
 
     }

@@ -4,7 +4,6 @@ namespace Modules\Section\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +20,9 @@ class SectionController extends Controller
     }
 
 
-    public function store( SectionRequest $request )
+    public function store(SectionRequest $request)
     {
-        $course = Course::find( $request->course_id);
+        $course = Course::find($request->course_id);
         if (!$course) {
             return ApiResponse::sendResponse(200, 'courseID not found', []);
         }
@@ -50,38 +49,26 @@ class SectionController extends Controller
     }
 
 
-
-
     public function show($courseId)
     {
-        // Find the course by its ID
         $course = Course::find($courseId);
 
-        // Check if the course exists
         if (!$course) {
             return ApiResponse::sendResponse(200, 'Course not found', []);
         }
-
-        // Get the authenticated teacher's ID
         $authenticatedTeacherId = Auth::guard('teacher')->id();
 
-        // Check if the authenticated teacher's ID matches the teacher ID associated with the course
         if ($course->teacher_id !== $authenticatedTeacherId) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
         }
+        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'sections.files', 'teachers')->get();
 
-        // Get the course with relation one to many (sections and videos)
-        $courseWithSectionsAndVideos = Course::where('id', $courseId)->with('sections.videos', 'teachers')->get();
-
-
-        // Check if the course exists and belongs to the authenticated teacher
         if (!$courseWithSectionsAndVideos) {
             return ApiResponse::sendResponse(200, 'Course not found', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Sections and videos for the course retrieved successfully', CourseResource::collection($courseWithSectionsAndVideos));
+        return ApiResponse::sendResponse(200, 'Sections and videos and files for the course retrieved successfully', CourseResource::collection($courseWithSectionsAndVideos));
     }
-
 
 
     public function update(Request $request, $id)

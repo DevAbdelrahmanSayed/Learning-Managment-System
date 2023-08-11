@@ -6,5 +6,6 @@
     "Course": true,
     "Category": true,
     "Video": true,
-    "ProfileTeacher": true
+    "ProfileTeacher": true,
+    "File": true
 }
