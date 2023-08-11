@@ -27,25 +27,20 @@ class FileController extends Controller
         if (!$section) {
             return ApiResponse::sendResponse(200, 'sectionID not found', []);
         }
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-        if ($section->teacher_id !== $authenticatedTeacher || empty($authenticatedTeacher)) {
+
+        if ($section->teacher_id !== auth()->user()->id) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this files', []);
         }
         $uploadedFilePath = $request->file('fileUrl')->storePublicly('course_file/files', 's3');
 
-        $data = [
+        $videoInsert = DB::table('files')->insert([
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
-            'section_id' =>$request->section_id,
-            'teacher_id' =>  $authenticatedTeacher,
-            'created_at' => now(),
-            'updated_at' => now()
-        ];
-        $videoInsert = DB::table('files')->insert($data);
+            'section_id' => $request->section_id,
+            'teacher_id' => auth()->user()->id,
+        ]);
 
-        if ($videoInsert) {
-            return ApiResponse::sendResponse(201, 'Your files uploaded successfully', []);
-        }
-        return ApiResponse::sendResponse(200, 'Failed to upload the files', []);
+
+        return ApiResponse::sendResponse(201, 'Your files uploaded successfully', []);
     }
 
 
