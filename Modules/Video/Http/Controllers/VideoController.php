@@ -24,11 +24,6 @@ class VideoController extends Controller
     public function store(VideoRequest $request)
     {
         $section = DB::table('sections')->find($request->section_id);
-        $course =DB::table('courses')->find($request->course_id);
-
-        if (!$section || !$course) {
-            return ApiResponse::sendResponse(200, 'sectionID and CourseID not found', []);
-        }
 
         // Get the authenticated teacher's ID
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
@@ -47,7 +42,6 @@ class VideoController extends Controller
             'description' => $request->description,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
             'section_id' =>$request->section_id,
-            'course_id' =>$request->course_id,
             'teacher_id' =>  $authenticatedTeacher,
             'created_at' => now(),
         ];

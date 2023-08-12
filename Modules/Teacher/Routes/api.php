@@ -14,9 +14,4 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::controller(TeacherController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-});
+

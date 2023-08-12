@@ -1,12 +1,14 @@
 <?php
 
-namespace Modules\Teacher\Http\Requests;
+namespace Modules\Auth\Http\Requests;
 
 use App\Helpers\ApiValidationHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
-class LoginRequest extends FormRequest
+use Modules\Teacher\Entities\Teacher;
+
+class RegisterRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,11 +18,11 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|max:255',
+            'name' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:' . Teacher::class],
             'password' => ['required', 'max:255', Password::defaults()],
         ];
     }
-
     protected function failedValidation(Validator $validator)
     {
         ApiValidationHelper::failedValidation( $validator);

@@ -1,19 +1,19 @@
 <?php
 
-namespace Modules\Teacher\Http\Controllers;
+namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Modules\Teacher\Entities\Teacher;
-use Modules\Teacher\Http\Requests\LoginRequest;
-use Modules\Teacher\Http\Requests\RegisterRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\RegisterRequest;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 
-class TeacherController extends Controller
+class AuthController extends Controller
 {
     public function __construct()
     {
@@ -31,7 +31,7 @@ class TeacherController extends Controller
         $teacher = Teacher::create($data);
         $token = JWTAuth::fromUser($teacher);
         $responseData = [
-            'token' =>  $token,
+            'token' => $token,
             'name' => $teacher->name,
             'email' => $teacher->email,
 
@@ -51,7 +51,7 @@ class TeacherController extends Controller
                 'token' => $token,
                 'name' => $currentTeacher->name,
                 'email' => $currentTeacher->email,
-                'teacherID'=>Auth::guard('teacher')->user()->id
+                'teacherID' => Auth::guard('teacher')->user()->id
             ];
             return ApiResponse::sendResponse(200, 'Teacher logged in Successfully', $responseData);
         } else {

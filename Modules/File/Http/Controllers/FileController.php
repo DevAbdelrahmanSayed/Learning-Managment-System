@@ -26,10 +26,6 @@ class FileController extends Controller
     public function store(FileRequest $request)
     {
         $section = DB::table('sections')->find($request->section_id);
-        $course =DB::table('courses')->find($request->course_id);
-        if (!$section || !$course) {
-            return ApiResponse::sendResponse(200, 'sectionID and CourseID not found', []);
-        }
 
         if ($section->teacher_id !== auth()->user()->id) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this files', []);
@@ -39,7 +35,6 @@ class FileController extends Controller
         $fileInsert = DB::table('files')->insert([
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
             'section_id' => $request->section_id,
-            'course_id' =>$request->course_id,
             'teacher_id' => auth()->user()->id,
             'created_at'=>now(),
         ]);

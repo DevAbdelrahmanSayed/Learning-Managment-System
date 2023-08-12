@@ -41,7 +41,7 @@ class SectionController extends Controller
     public function show($courseId)
     {
 
-        $course = Course::with('sections.videos', 'sections.files', 'teachers')->where('id', $courseId)->first();
+        $course = Course::where('id', $courseId)->with('sections.Videos', 'sections.files', 'teachers')->first();
 
         if (!$course) {
             return ApiResponse::sendResponse(200, 'Course not found', []);
