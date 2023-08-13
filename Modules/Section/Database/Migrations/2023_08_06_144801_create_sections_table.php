@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
             $table->string('title');
             $table->string('description');
-           // $table->foreignId('course_id')->references('id')->on('courses')->cascadeOnDelete();
-            $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
             $table->timestamps();
+           // $table->foreignId('course_id')->references('id')->on('courses')->cascadeOnDelete();
         });
     }
 

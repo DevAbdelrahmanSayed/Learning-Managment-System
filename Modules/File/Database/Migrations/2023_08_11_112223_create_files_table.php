@@ -15,10 +15,9 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->string('fileUrl');
             $table->foreignId('section_id')->references('id')->on('sections')->cascadeOnDelete();
-
             $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
+            $table->string('fileUrl');
             $table->timestamps();
         });
     }
