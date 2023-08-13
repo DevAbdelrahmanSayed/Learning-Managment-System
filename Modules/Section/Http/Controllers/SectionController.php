@@ -18,20 +18,20 @@ class SectionController extends Controller
     public function store(SectionRequest $request)
     {
         $course = Course::find($request->course_id);
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-        if (!$course || $course->teacher_id !==  $authenticatedTeacher) {
-            return ApiResponse::sendResponse('Unauthorized: You do not have permission to access this section', [], 403);
+
+        if ($course->teacher_id !== auth()->user()->id) {
+            return ApiResponse::sendResponse(403 , 'Unauthorized: You do not allowed to take this action' , null);
         }
-        $data = [
+
+        $insertedSection = DB::table('sections')->insert([
             'title' => $request->title,
             'description' => $request->description,
             'course_id' => $request->course_id,
-            'teacher_id' => $authenticatedTeacher,
+            'teacher_id' => auth()->user()->id,
             'created_at' => now(),
-
-        ];
-        $sectionInsert = DB::table('sections')->insert($data);
-        if ($sectionInsert) {
+            'updated_at' => now()
+        ]);
+        if ($insertedSection) {
             return ApiResponse::sendResponse(201, 'Section created successfully', []);
         }
         return ApiResponse::sendResponse(200, 'Failed to create the section', []);
@@ -40,41 +40,38 @@ class SectionController extends Controller
 
     public function show($courseId)
     {
-
         $course = Course::where('id', $courseId)->with('sections.Videos', 'sections.files', 'teachers')->first();
 
         if (!$course) {
-            return ApiResponse::sendResponse(200, 'Course not found', []);
+            return ApiResponse::sendResponse(200, 'Course not found', null);
         }
 
-        $authenticatedTeacherId = Auth::guard('teacher')->id();
-
-        if ($course->teacher_id !== $authenticatedTeacherId) {
+        if ($course->teacher_id !== auth()->user()->id) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Sections and videos and files for the course retrieved successfully', new CourseResource($course));
+        return ApiResponse::sendResponse(200, 'Data retrieved successfully. ', new CourseResource($course));
     }
 
 
-    public function update(SectionUpdateRequest $request,$sectionId)
+    public function update(SectionUpdateRequest $request, $sectionId)
     {
 
         $section = Section::find($sectionId);
 
-            if (!$section) {
-                return ApiResponse::sendResponse(200, 'Section not found', []);
-            }
-            $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-            if ($section->teacher_id !== $authenticatedTeacher) {
-                return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this section', []);
+        if (!$section) {
+            return ApiResponse::sendResponse(200, 'Section not found', []);
         }
-        $data =[
+        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
+        if ($section->teacher_id !== $authenticatedTeacher) {
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this section', []);
+        }
+        $data = [
             'title' => $request->title,
             'description' => $request->description,
             'updated_at' => now(),
         ];
-        $sectionUpdate = DB::table('sections')->where('id',$sectionId)->update($data);
+        $sectionUpdate = DB::table('sections')->where('id', $sectionId)->update($data);
         if ($sectionUpdate) {
             return ApiResponse::sendResponse(200, 'Section updated successfully', []);
         }
