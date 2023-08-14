@@ -6,7 +6,6 @@ use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Modules\Teacher\Entities\Teacher;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Contracts\Support\Renderable;
@@ -32,8 +31,8 @@ class RegisterController extends Controller
     public function storeTeacher(Request $request)
     {
         $teacherData = $request->validate([
-            'name' => ['required','string' , 'min:3' , 'max:25'],
-            'email' => ['required','email' , 'unique:teachers,email'],
+            'name' => ['required', 'string', 'min:3', 'max:25'],
+            'email' => ['required', 'email', 'unique:teachers,email'],
             'password' => ['required', 'max:255', Password::defaults()]
         ]);
         $teacherData = Teacher::create($teacherData);
