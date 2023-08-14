@@ -41,8 +41,9 @@ class SessionController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy()
     {
-        //
+        Auth::guard('teacher')->logout();
+        return ApiResponse::sendResponse(200, 'Teacher logged out successfully', []);
     }
 }
