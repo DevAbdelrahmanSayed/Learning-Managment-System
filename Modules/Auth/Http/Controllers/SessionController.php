@@ -2,17 +2,17 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Modules\Auth\Http\Requests\LoginRequest;
+use Modules\Auth\Transformers\TeacherResource;
 
 class SessionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:teacher', ['except' => ['login']]);
-    }
+
 
     public function __invoke(LoginRequest $request)
     {
@@ -26,7 +26,18 @@ class SessionController extends Controller
 
     public function storeTeacherSession(Request $request)
     {
-        dd('Teacher login');
+        $credentials = $request->only('email', 'password');
+        $token = Auth::guard('teacher')->attempt($credentials);
+
+        if ($token) {
+            $currentTeacher = Auth::guard('teacher')->user();
+            $currentTeacher['token'] = $token;
+
+            return ApiResponse::sendResponse(200, 'Teacher logged in Successfully', new TeacherResource($currentTeacher));
+        } else {
+            return ApiResponse::sendResponse(401, 'Teacher credentials do not work', []);
+        }
+
     }
 
 
