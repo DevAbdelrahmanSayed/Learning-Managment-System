@@ -33,12 +33,10 @@ class CourseController extends Controller
                             'prev' => $allCourses->previousPageUrl(),
                             'next' => $allCourses->nextPageUrl(),
                         ]
-
                     ]
                 ];
             } else {
                 $data = CourseResource::collection($allCourses);
-
             }
             return ApiResponse::sendResponse(200, 'All Courses retrieved successfully', $data);
         }

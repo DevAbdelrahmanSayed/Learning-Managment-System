@@ -16,10 +16,10 @@ use Modules\Auth\Http\Controllers\AuthController;
 */
 
 
-Route::prefix('teacher')->controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    Route::post('refresh', 'refresh');
+Route::middleware('guest')->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
 });
 
 Route::post('logout', [AuthController::class , 'logout'])->middleware('auth');

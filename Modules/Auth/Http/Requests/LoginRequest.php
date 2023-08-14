@@ -2,10 +2,12 @@
 
 namespace Modules\Auth\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use App\Helpers\ApiValidationHelper;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+
 class LoginRequest extends FormRequest
 {
     /**
@@ -18,6 +20,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email|max:255',
             'password' => ['required', 'max:255', Password::defaults()],
+            'type' => ['required' , 'string' , Rule::in(['teacher' , 'student'])]
         ];
     }
 

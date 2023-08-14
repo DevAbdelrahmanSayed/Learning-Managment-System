@@ -18,6 +18,8 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('auth:teacher', ['except' => ['login', 'register']]);
+
+        
     }
     public function register(RegisterRequest $request)
     {
