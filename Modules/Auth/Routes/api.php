@@ -18,11 +18,10 @@ use Modules\Auth\Http\Controllers\RegisterController;
 */
 
 
-
 Route::middleware('guest')->group(function () {
     Route::post('login', SessionController::class);
     Route::post('register', RegisterController::class);
 });
 
-Route::post('logout', [SessionController::class , 'destroy'])->middleware('auth');
-
+Route::post('teacher/logout', [SessionController::class , 'destroy'])->middleware('auth:teacher');
+Route::post('student/logout', [SessionController::class, 'destroy'])->middleware('auth:student');

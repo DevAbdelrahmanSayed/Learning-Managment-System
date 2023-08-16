@@ -20,7 +20,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email|max:255',
             'password' => ['required', 'max:255', Password::defaults()],
-            'type' => ['required' , 'string' , Rule::in(['teacher' , 'student'])]
+            'type' => ['required' , Rule::in(['teacher' , 'student'])]
         ];
     }
 

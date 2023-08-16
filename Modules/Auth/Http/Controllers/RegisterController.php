@@ -48,6 +48,6 @@ class RegisterController extends Controller
 
     public function destroy($id)
     {
-        //
+        //! Remove account
     }
 }
