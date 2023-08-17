@@ -45,11 +45,11 @@ class RegisterController extends Controller
         dd('Register Student');
     }
 
-    public function otpGenerate($teacherData)
+    public function otpGenerate($modelData)
     {
-        $teacherData->otp = rand(1000, 9999);
-        $teacherData->expire_at = now()->addMinute(15);
-        $teacherData->save();
+        $modelData->otp = rand(1000, 9999);
+        $modelData->expire_at = now()->addMinutes(15);
+        $modelData->save();
     }
     public function destroy($id)
     {
