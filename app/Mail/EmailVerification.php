@@ -16,9 +16,10 @@ class EmailVerification extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public $otp , public $name)
     {
-        //
+        $this->name=$name;
+        $this->otp=$otp;
     }
 
     /**

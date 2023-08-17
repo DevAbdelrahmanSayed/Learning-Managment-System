@@ -3,8 +3,10 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Mail\EmailVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use Modules\Teacher\Entities\Teacher;
@@ -36,6 +38,8 @@ class RegisterController extends Controller
         $teacherData = Teacher::create($teacherData);
         $this->otpGenerate($teacherData);
         $teacherData['token'] = JWTAuth::fromUser($teacherData);
+
+        Mail::to( $teacherData->email)->send(new EmailVerification($teacherData->otp,$teacherData->name));
         return ApiResponse::sendResponse(201, 'Teacher Account Created Successfully', new TeacherResource($teacherData));
     }
 
@@ -51,6 +55,7 @@ class RegisterController extends Controller
         $modelData->expire_at = now()->addMinutes(15);
         $modelData->save();
     }
+
     public function destroy($id)
     {
         //! Remove account

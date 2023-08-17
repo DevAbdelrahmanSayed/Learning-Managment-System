@@ -17,5 +17,5 @@ use Modules\Course\Http\Controllers\CoursexController;
 */
 
 
-Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher']);
+Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher','verified']);
 
