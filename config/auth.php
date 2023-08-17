@@ -16,8 +16,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'user',
-        'passwords' => 'users',
+        'guard' => 'student',
+        'passwords' => 'students',
 
     ],
 
@@ -39,13 +39,10 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+
         'student' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'students',
             'ttl' => 7 * 24 * 60,
             'expire' => 10080
         ],
@@ -75,13 +72,13 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'students' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => Modules\User\Entities\User::class,
         ],
         'teachers' => [
             'driver' => 'eloquent',
-            'model' => Teacher::class,
+            'model' => Modules\Teacher\Entities\Teacher::class,
         ],
 
     ],
@@ -106,14 +103,14 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'students' => [
+            'provider' => 'students',
             'table' => 'password_reset_tokens',
             'expire' => 5,
             'throttle' => 60,
         ],
         'teachers' => [
-            'provider' => 'users',
+            'provider' => 'teachers',
             'table' => 'password_reset_tokens',
             'expire' => 5,
             'throttle' => 60,

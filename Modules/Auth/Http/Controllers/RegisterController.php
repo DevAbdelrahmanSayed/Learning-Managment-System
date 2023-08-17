@@ -4,6 +4,7 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use Modules\Teacher\Entities\Teacher;
@@ -14,10 +15,7 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class RegisterController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+
 
     public function __invoke(Request $request)
     {
@@ -36,16 +34,23 @@ class RegisterController extends Controller
             'password' => ['required', 'max:255', Password::defaults()]
         ]);
         $teacherData = Teacher::create($teacherData);
+        $this->otpGenerate($teacherData);
         $teacherData['token'] = JWTAuth::fromUser($teacherData);
-
         return ApiResponse::sendResponse(201, 'Teacher Account Created Successfully', new TeacherResource($teacherData));
     }
+
 
     public function storeStudent(Request $request)
     {
         dd('Register Student');
     }
 
+    public function otpGenerate($teacherData)
+    {
+        $teacherData->otp = rand(1000, 9999);
+        $teacherData->expire_at = now()->addMinute(15);
+        $teacherData->save();
+    }
     public function destroy($id)
     {
         //! Remove account

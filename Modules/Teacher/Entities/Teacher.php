@@ -25,6 +25,9 @@ class Teacher extends Authenticatable implements JWTSubject
         'password',
         'about',
         'profile',
+        'otp',
+        'expire_at'
+
     ];
 
     /**
@@ -77,6 +80,12 @@ class Teacher extends Authenticatable implements JWTSubject
         $this->attributes['password'] = Hash::make($value);
     }
 
+//    public function generateOTP(){
+//        $this->timestamps = false;
+//        $this->otp = rand(1000, 9999);
+//        $this->expire_at = now()->addMinutes(15);
+//        $this->save();
+//    }
     public function courses()
     {
         return $this->hasMany(Course::class, 'teacher_id');
