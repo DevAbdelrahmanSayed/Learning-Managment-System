@@ -16,4 +16,4 @@ use Modules\Video\Http\Controllers\VideoController;
 */
 
 
-Route::apiResource('videos', VideoController::class)->middleware(['auth:teacher']);
+Route::apiResource('videos', VideoController::class)->middleware(['auth:teacher','Verify:teacher']);

@@ -18,6 +18,6 @@ use Modules\Section\Http\Controllers\SectiosnController;
 
 
 
-Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher']);
+Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher','Verify:teacher']);
 
 

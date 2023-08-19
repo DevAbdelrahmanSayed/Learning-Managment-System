@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Teacher\Entities\Teacher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Contracts\Support\Renderable;
 use Modules\Auth\Transformers\TeacherResource;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
@@ -58,7 +57,7 @@ class RegisterController extends Controller
         dd('Register Student');
     }
 
-    public function otpGenerate($modelData)
+    public static function otpGenerate($modelData)
     {
         $modelData->otp = rand(1000, 9999);
         $modelData->expire_at = now()->addMinutes(15);

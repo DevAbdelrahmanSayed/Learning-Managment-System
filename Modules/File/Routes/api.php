@@ -15,4 +15,4 @@ use Modules\File\Http\Controllers\FileController;
 |
 */
 
-Route::apiResource('files',FileController::class)->middleware(['auth:teacher']);
+Route::apiResource('files',FileController::class)->middleware(['auth:teacher','Verify:teacher']);

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 
 class OtpController extends Controller
@@ -22,15 +23,21 @@ class OtpController extends Controller
         if ($request->otp == $user->otp) {
             if (now()->lt($user->expire_at)) {
                 $user->email_verified_at = now();
+                $user->otp=null;
                 $user->save();
-                return ApiResponse::sendResponse(200, 'Teacher Account verified Successfully', []);
+                $token = JWTAuth::fromUser($user);
+                $responseData = [
+
+                    'token' => $token,
+                ];
+                return ApiResponse::sendResponse(200, 'OTP has verified Successfully',$responseData );
             }else{
                 return ApiResponse::sendResponse(200, 'OTP has expired', []);
             }
         }
         return ApiResponse::sendResponse(400, 'Invalid OTP ', []);
     }
-    public function resendOtp(Request $request)
+    public function resendOtp()
     {
         $user = Auth::guard('teacher')->user();
         if ($user) {
