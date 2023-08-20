@@ -12,18 +12,16 @@ class SectionResource extends JsonResource
      * @param \Illuminate\Http\Request
      * @return array
      */
-
     public function toArray($request)
     {
 
-                return [
-                    'section_id' => $this->id,
-                    'section_title' => $this->title,
-                    'section_description' => $this->description,
-                    'section_videos' => $this->videos->pluck('videoUrl'),
-                    'section_Files' => $this->files->pluck('fileUrl'),
-                ];
+        return [
+            'section_id' => $this->id,
+            'section_title' => $this->title,
+            'section_description' => $this->description,
+            'section_videos' => $this->videos->pluck('videoUrl'),
+            'section_Files' => $this->files->pluck('fileUrl'),
+        ];
 
     }
 }
-

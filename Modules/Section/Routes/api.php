@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Section\Http\Controllers\SectionController;
-use Modules\Section\Http\Controllers\SectiosnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +14,4 @@ use Modules\Section\Http\Controllers\SectiosnController;
 |
 */
 
-
-
-Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher','Verify:teacher']);
-
-
+Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher', 'Verify:teacher']);

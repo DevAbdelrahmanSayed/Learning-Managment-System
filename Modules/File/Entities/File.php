@@ -2,8 +2,8 @@
 
 namespace Modules\File\Entities;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Section\Entities\Section;
 
 class file extends Model
@@ -19,8 +19,9 @@ class file extends Model
     {
         return \Modules\File\Database\factories\FileFactory::new();
     }
+
     public function sections()
     {
-        return $this->belongsTo(Section::class,'section_id');
+        return $this->belongsTo(Section::class, 'section_id');
     }
 }

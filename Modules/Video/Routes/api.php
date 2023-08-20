@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Video\Http\Controllers\VideoController;
 
@@ -15,5 +14,4 @@ use Modules\Video\Http\Controllers\VideoController;
 |
 */
 
-
-Route::apiResource('videos', VideoController::class)->middleware(['auth:teacher','Verify:teacher']);
+Route::apiResource('videos', VideoController::class)->middleware(['auth:teacher', 'Verify:teacher']);

@@ -12,10 +12,8 @@ use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\CourseRequest;
 use Modules\Section\Transformers\CourseResource;
 
-
 class CourseController extends Controller
 {
-
     public function index()
     {
         $allCourses = Course::with('teachers')->latest()->paginate(2);
@@ -32,18 +30,18 @@ class CourseController extends Controller
                             'last' => $allCourses->url($allCourses->lastPage()),
                             'prev' => $allCourses->previousPageUrl(),
                             'next' => $allCourses->nextPageUrl(),
-                        ]
-                    ]
+                        ],
+                    ],
                 ];
             } else {
                 $data = CourseResource::collection($allCourses);
             }
+
             return ApiResponse::sendResponse(200, 'All Courses retrieved successfully', $data);
         }
 
         return ApiResponse::sendResponse(200, 'No courses Available', []);
     }
-
 
     public function store(CourseRequest $request)
     {
@@ -56,27 +54,26 @@ class CourseController extends Controller
             'price' => $request->price,
             'category_id' => $request->category_id,
             'created_at' => now(),
-            'slug' => Str::slug($request->title) . '.' . Str::uuid(),
-            'teacher_id' => Auth::guard('teacher')->user()->id
+            'slug' => Str::slug($request->title).'.'.Str::uuid(),
+            'teacher_id' => Auth::guard('teacher')->user()->id,
         ];
         $course = DB::table('courses')->insert($data);
         if ($course) {
             return ApiResponse::sendResponse(201, 'your courses created successfully', []);
         }
+
         return ApiResponse::sendResponse(200, 'Failed to create the course', []);
 
     }
 
-
-    public function show(CourseRequest $request,)
+    public function show(CourseRequest $request)
     {
     }
 
-
     public function update(CourseRequest $request, $courseId)
     {
-        $course =DB::table('courses')->find($courseId);
-        if (!$course) {
+        $course = DB::table('courses')->find($courseId);
+        if (! $course) {
             return ApiResponse::sendResponse(404, 'Course not found', []);
         }
         $authenticatedTeacherId = Auth::guard('teacher')->id();
@@ -105,15 +102,15 @@ class CourseController extends Controller
         if ($course) {
             return ApiResponse::sendResponse(200, 'course updated successfully', []);
         }
+
         return ApiResponse::sendResponse(200, 'Course updated successfully', []);
     }
 
-
     public function destroy($courseId)
     {
-        $course =DB::table('courses')->find($courseId);
+        $course = DB::table('courses')->find($courseId);
 
-        if (!$course) {
+        if (! $course) {
             return ApiResponse::sendResponse(200, 'course not found', []);
         }
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
@@ -126,8 +123,9 @@ class CourseController extends Controller
                 Storage::disk('s3')->delete("course_photos/photo/{$existingPhotoPath}");
             }
         }
-            DB::table('courses')->where('id', $courseId)->delete();
-            return ApiResponse::sendResponse(200, 'course deleted successfully', []);
+        DB::table('courses')->where('id', $courseId)->delete();
+
+        return ApiResponse::sendResponse(200, 'course deleted successfully', []);
 
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-use Modules\Teacher\Entities\Teacher;
-
 return [
 
     /*
@@ -44,13 +42,13 @@ return [
             'driver' => 'jwt',
             'provider' => 'students',
             'ttl' => 7 * 24 * 60,
-            'expire' => 10080
+            'expire' => 10080,
         ],
         'teacher' => [
             'driver' => 'jwt',
             'provider' => 'teachers',
             'ttl' => 7 * 24 * 60,
-            'expire' => 10080
+            'expire' => 10080,
         ],
     ],
 

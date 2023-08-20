@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\File\Http\Controllers\FileController;
 
@@ -15,4 +14,4 @@ use Modules\File\Http\Controllers\FileController;
 |
 */
 
-Route::apiResource('files',FileController::class)->middleware(['auth:teacher','Verify:teacher']);
+Route::apiResource('files', FileController::class)->middleware(['auth:teacher', 'Verify:teacher']);

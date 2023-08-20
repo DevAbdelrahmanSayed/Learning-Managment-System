@@ -3,23 +3,18 @@
 namespace Modules\Video\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Modules\Section\Entities\Section;
 use Modules\Video\Http\Requests\VideoRequest;
 
 class VideoController extends Controller
 {
-
     public function index()
     {
         //
     }
-
 
     public function store(VideoRequest $request)
     {
@@ -41,8 +36,8 @@ class VideoController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
-            'section_id' =>$request->section_id,
-            'teacher_id' =>  $authenticatedTeacher,
+            'section_id' => $request->section_id,
+            'teacher_id' => $authenticatedTeacher,
             'created_at' => now(),
         ];
 
@@ -56,21 +51,18 @@ class VideoController extends Controller
         return ApiResponse::sendResponse(200, 'Failed to upload the Video', []);
     }
 
-
-
     public function show($id)
     {
         //
     }
 
-
     public function update(VideoRequest $request, $videoId)
     {
         $video = DB::table('videos')->find($videoId);
         $section = DB::table('sections')->find($request->section_id);
-        $course =DB::table('courses')->find($request->course_id);
+        $course = DB::table('courses')->find($request->course_id);
 
-        if (!$video) {
+        if (! $video) {
             return ApiResponse::sendResponse(404, 'Video not found', []);
         }
 
@@ -94,8 +86,8 @@ class VideoController extends Controller
         $data = [
             'title' => $request->title,
             'description' => $request->description,
-            'section_id' =>$request->section_id,
-            'course_id' =>$request->course_id,
+            'section_id' => $request->section_id,
+            'course_id' => $request->course_id,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
             'updated_at' => now(),
         ];
@@ -105,12 +97,11 @@ class VideoController extends Controller
         return ApiResponse::sendResponse(200, 'Video updated successfully', []);
     }
 
-
     public function destroy($videoId)
     {
         $video = DB::table('videos')->find($videoId);
 
-        if (!$video) {
+        if (! $video) {
             return ApiResponse::sendResponse(404, 'Video not found', []);
         }
 
@@ -131,5 +122,4 @@ class VideoController extends Controller
 
         return ApiResponse::sendResponse(200, 'Video deleted successfully', []);
     }
-
 }

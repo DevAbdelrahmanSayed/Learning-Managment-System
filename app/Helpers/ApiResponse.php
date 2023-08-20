@@ -11,6 +11,7 @@ class ApiResponse
             'message' => $message,
             'data' => $data,
         ];
+
         return response()->json($response, $code);
     }
 }

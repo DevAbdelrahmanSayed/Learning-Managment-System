@@ -2,13 +2,13 @@
 
 namespace Modules\Teacher\Entities;
 
-use Laravel\Sanctum\HasApiTokens;
-use Modules\Course\Entities\Course;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Notifications\Notifiable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
+use Modules\Course\Entities\Course;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Teacher extends Authenticatable implements JWTSubject
 {
@@ -26,7 +26,7 @@ class Teacher extends Authenticatable implements JWTSubject
         'about',
         'profile',
         'otp',
-        'expire_at'
+        'expire_at',
 
     ];
 
@@ -79,8 +79,6 @@ class Teacher extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = Hash::make($value);
     }
-
-
 
     public function courses()
     {

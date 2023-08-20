@@ -4,7 +4,6 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -13,13 +12,10 @@ use Modules\Auth\Transformers\TeacherResource;
 
 class SessionController extends Controller
 {
-
-
     public function __invoke(LoginRequest $request)
     {
         return ($request->type === 'teacher') ? $this->storeTeacherSession($request) : $this->storeStudentSession($request);
     }
-
 
     public function storeTeacherSession(Request $request)
     {
@@ -29,6 +25,7 @@ class SessionController extends Controller
         if ($tokenIfCredentialsWorks) {
             $currentTeacher = Auth::guard('teacher')->user();
             $currentTeacher['token'] = $tokenIfCredentialsWorks;
+
             return ApiResponse::sendResponse(200, 'Teacher logged in Successfully', new TeacherResource($currentTeacher));
         } else {
             return ApiResponse::sendResponse(401, 'Teacher credentials do not work', []);
@@ -43,10 +40,11 @@ class SessionController extends Controller
 
     public function destroy()
     {
-        if (Route::is('teacher/logout'))
+        if (Route::is('teacher/logout')) {
             Auth::guard('teacher')->logout();
-        elseif(Route::is('student/logout'))
+        } elseif (Route::is('student/logout')) {
             Auth::guard('student')->logout();
+        }
 
         return ApiResponse::sendResponse(200, 'User logged out successfully', []);
     }

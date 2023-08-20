@@ -1,9 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use Modules\Teacher\Http\Controllers\TeacherController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,4 +10,3 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-

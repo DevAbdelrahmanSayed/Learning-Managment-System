@@ -20,9 +20,10 @@ class SectionUpdateRequest extends FormRequest
             'description' => 'required|string|max:255',
         ];
     }
+
     protected function failedValidation(Validator $validator)
     {
-        ApiValidationHelper::failedValidation( $validator);
+        ApiValidationHelper::failedValidation($validator);
     }
 
     /**

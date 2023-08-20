@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Helpers;
 
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ApiValidationHelper
 {

@@ -4,7 +4,6 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Mail\EmailVerification;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Modules\Teacher\Entities\Teacher;
-
 
 class ResetPasswordController extends Controller
 {
@@ -55,6 +53,4 @@ class ResetPasswordController extends Controller
 
         return ApiResponse::sendResponse(201, 'Password updated Successfully', []);
     }
-
 }
-

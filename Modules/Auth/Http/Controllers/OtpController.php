@@ -2,16 +2,14 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use App\Helpers\OTP;
-
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
+use App\Helpers\OTP;
 use App\Mail\EmailVerification;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-
 
 class OtpController extends Controller
 {
@@ -41,6 +39,7 @@ class OtpController extends Controller
 
         return ApiResponse::sendResponse(400, 'Invalid OTP ', []);
     }
+
     public function resendOtp()
     {
         $user = Auth::guard('teacher')->user();
@@ -48,10 +47,10 @@ class OtpController extends Controller
             OTP::generate($user); // Resend OTP
 
             Mail::to($user->email)->send(new EmailVerification($user->otp, $user->name));
+
             return ApiResponse::sendResponse(200, 'A new OTP has been sent to your email.', []);
         }
+
         return ApiResponse::sendResponse(400, 'User not found', []);
     }
-
-
 }

@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Course\Http\Controllers\CourseController;
-use Modules\Course\Http\Controllers\CoursexController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +14,4 @@ use Modules\Course\Http\Controllers\CoursexController;
 |
 */
 
-
-Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher','Verify:teacher']);
-
+Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher', 'Verify:teacher']);

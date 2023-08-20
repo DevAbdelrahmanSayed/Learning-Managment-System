@@ -3,7 +3,6 @@
 namespace Modules\Section\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +19,7 @@ class SectionController extends Controller
         $course = Course::find($request->course_id);
 
         if ($course->teacher_id !== auth()->user()->id) {
-            return ApiResponse::sendResponse(403 , 'Unauthorized: You do not allowed to take this action' , null);
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not allowed to take this action', null);
         }
 
         $insertedSection = DB::table('sections')->insert([
@@ -29,11 +28,12 @@ class SectionController extends Controller
             'course_id' => $request->course_id,
             'teacher_id' => auth()->user()->id,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
         if ($insertedSection) {
             return ApiResponse::sendResponse(201, 'Section created successfully', []);
         }
+
         return ApiResponse::sendResponse(200, 'Failed to create the section', []);
 
     }
@@ -42,7 +42,7 @@ class SectionController extends Controller
     {
         $course = Course::where('id', $courseId)->with('sections.Videos', 'sections.files', 'teachers')->first();
 
-        if (!$course) {
+        if (! $course) {
             return ApiResponse::sendResponse(200, 'Course not found', null);
         }
 
@@ -53,13 +53,12 @@ class SectionController extends Controller
         return ApiResponse::sendResponse(200, 'Data retrieved successfully. ', new CourseResource($course));
     }
 
-
     public function update(SectionUpdateRequest $request, $sectionId)
     {
 
         $section = Section::find($sectionId);
 
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(200, 'Section not found', []);
         }
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
@@ -79,12 +78,11 @@ class SectionController extends Controller
         return ApiResponse::sendResponse(200, 'Failed to update the section', []);
     }
 
-
     public function destroy($sectionId)
     {
         $section = Section::find($sectionId);
 
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(200, 'Section not found', []);
         }
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
@@ -92,6 +90,7 @@ class SectionController extends Controller
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this section', []);
         }
         $section->delete();
+
         return ApiResponse::sendResponse(200, 'Section deleted successfully', []);
     }
 }

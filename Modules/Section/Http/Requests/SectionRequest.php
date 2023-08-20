@@ -1,8 +1,9 @@
 <?php
 
 namespace Modules\Section\Http\Requests;
-use Illuminate\Contracts\Validation\Validator;
+
 use App\Helpers\ApiValidationHelper;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SectionRequest extends FormRequest
@@ -17,13 +18,14 @@ class SectionRequest extends FormRequest
         return [
             'title' => 'required|string|max:20',
             'description' => 'required|string|max:255',
-            'course_id' =>'required|Integer|exists:courses,id'
+            'course_id' => 'required|Integer|exists:courses,id',
         ];
 
     }
+
     protected function failedValidation(Validator $validator)
     {
-        ApiValidationHelper::failedValidation( $validator);
+        ApiValidationHelper::failedValidation($validator);
     }
 
     /**

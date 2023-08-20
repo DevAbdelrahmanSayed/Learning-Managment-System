@@ -3,25 +3,19 @@
 namespace Modules\File\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\File\Entities\file;
 use Modules\File\Http\Requests\FileRequest;
-use Modules\Section\Entities\Section;
-use Modules\Video\Http\Requests\VideoRequest;
 
 class FileController extends Controller
 {
-
     public function index()
     {
 
     }
-
 
     public function store(FileRequest $request)
     {
@@ -36,31 +30,28 @@ class FileController extends Controller
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
             'section_id' => $request->section_id,
             'teacher_id' => auth()->user()->id,
-            'created_at'=>now(),
+            'created_at' => now(),
         ]);
-        if($fileInsert){
+        if ($fileInsert) {
             return ApiResponse::sendResponse(201, 'Your files uploaded successfully', []);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to upload the file', []);
     }
 
-
-
     public function show($id)
     {
         //
     }
 
-
     public function update(FileRequest $request, $fileId)
     {
 
         $section = DB::table('sections')->find($request->section_id);
-        $course =DB::table('courses')->find($request->course_id);
+        $course = DB::table('courses')->find($request->course_id);
 
-        $file =File::find( $fileId);
-        if (!$file) {
+        $file = File::find($fileId);
+        if (! $file) {
             return ApiResponse::sendResponse(404, 'File not found', []);
         }
 
@@ -79,10 +70,10 @@ class FileController extends Controller
         $fileUpdate = DB::table('files')->update([
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
             'section_id' => $request->section_id,
-            'course_id' =>$request->course_id,
-            'updated_at'=>now(),
+            'course_id' => $request->course_id,
+            'updated_at' => now(),
         ]);
-        if($fileUpdate ){
+        if ($fileUpdate) {
             return ApiResponse::sendResponse(201, 'Your files updated successfully', []);
         }
 
@@ -90,24 +81,24 @@ class FileController extends Controller
 
     }
 
-
     public function destroy($fileId)
     {
-        $file =File::find( $fileId);
-        if (!$file) {
+        $file = File::find($fileId);
+        if (! $file) {
             return ApiResponse::sendResponse(404, 'File not found', []);
         }
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
         if ($file->teacher_id !== $authenticatedTeacher) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this course', []);
         }
-        if($file->fileUrl) {
+        if ($file->fileUrl) {
             $existingFilePath = basename(parse_url($file->fileUrl, PHP_URL_PATH));
             if (Storage::disk('s3')->exists("course_file/files/{$existingFilePath}")) {
                 Storage::disk('s3')->delete("course_file/files/{$existingFilePath}");
             }
         }
         DB::table('files')->where('id', $fileId)->delete();
+
         return ApiResponse::sendResponse(200, 'file deleted successfully', []);
     }
 }

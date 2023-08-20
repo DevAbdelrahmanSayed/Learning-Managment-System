@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('file')->group(function() {
+Route::prefix('file')->group(function () {
     Route::get('/', 'FileController@index');
 });

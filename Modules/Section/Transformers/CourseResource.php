@@ -18,7 +18,7 @@ class CourseResource extends JsonResource
             'Course Name' => $this->title,
             'Course Description' => $this->description,
             'teacher_name' => $this->teachers->name,
-            'Sections' => SectionResource::collection($this->sections)
+            'Sections' => SectionResource::collection($this->sections),
         ];
     }
 }
