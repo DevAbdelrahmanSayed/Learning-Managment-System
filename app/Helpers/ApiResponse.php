@@ -2,9 +2,7 @@
 
 namespace App\Helpers;
 
-class
-
-ApiResponse
+class ApiResponse
 {
     public static function sendResponse($code = 200, $message = null, $data = null)
     {

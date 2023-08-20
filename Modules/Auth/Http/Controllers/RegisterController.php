@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Helpers\OTP;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use App\Mail\EmailVerification;
@@ -44,7 +45,8 @@ class RegisterController extends Controller
             return ApiResponse::sendResponse(422, 'Validation Errors', $validator->errors());
 
         $teacherData = Teacher::create($validator->validated());
-        $this->otpGenerate($teacherData);
+        OTP::generate($teacherData);
+        
         $teacherData['token'] = JWTAuth::fromUser($teacherData);
 
         Mail::to($teacherData->email)->send(new EmailVerification($teacherData->otp, $teacherData->name));
@@ -55,13 +57,6 @@ class RegisterController extends Controller
     public function storeStudent(Request $request)
     {
         dd('Register Student');
-    }
-
-    public static function otpGenerate($modelData)
-    {
-        $modelData->otp = rand(1000, 9999);
-        $modelData->expire_at = now()->addMinutes(15);
-        $modelData->save();
     }
 
     public function destroy($id)
