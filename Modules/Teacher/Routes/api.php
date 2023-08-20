@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Modules\Teacher\Http\Controllers\TeacherController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -10,3 +13,7 @@
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::middleware(['auth:teacher'])->group(function () {
+    Route::put('teacher', [TeacherController::class, 'update']);
+});
