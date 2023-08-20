@@ -4,10 +4,8 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\OTP;
-use App\Mail\EmailVerification;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -46,8 +44,6 @@ class RegisterController extends Controller
         OTP::generate($teacherData);
 
         $teacherData['token'] = JWTAuth::fromUser($teacherData);
-
-        Mail::to($teacherData->email)->send(new EmailVerification($teacherData->otp, $teacherData->name));
 
         return ApiResponse::sendResponse(201, 'Teacher Account Created Successfully', new TeacherResource($teacherData));
     }
