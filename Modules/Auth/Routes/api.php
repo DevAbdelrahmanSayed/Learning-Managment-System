@@ -28,8 +28,6 @@ Route::post('teacher/logout', [SessionController::class, 'destroy'])->middleware
 Route::post('student/logout', [SessionController::class, 'destroy'])->middleware('auth:student');
 
 Route::prefix('password')->group(function () {
-    // Reset link email route
     Route::post('verification', [ResetPasswordController::class, 'resetLinkEmail']);
-    // Reset password route
     Route::post('reset', [ResetPasswordController::class, 'resetPassword'])->middleware('Verify:teacher');
 });
