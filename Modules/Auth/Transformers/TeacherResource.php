@@ -14,12 +14,14 @@ class TeacherResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'verification' => $this->email_verified_at,
-            'token' => $this->token,
         ];
+        isset($this->token) ? $data['token'] = $this->token : '';
+        isset($this->email_verified_at) ? $data['verification'] = $this->email_verified_at : '';
+
+        return $data;
     }
 }
