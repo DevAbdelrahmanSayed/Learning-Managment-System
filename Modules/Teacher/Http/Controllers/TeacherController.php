@@ -21,9 +21,10 @@ class TeacherController extends Controller
      */
     public function update(UpdateTeacherRequest $request)
     {
-        if (! Hash::check($request->old_password, auth()->user()->password)) {
-            return ApiResponse::sendResponse(401, 'The old password does not match .', null);
-        }
+        if ($request->has(['password', 'old_password']))
+            if (!Hash::check($request->old_password, auth()->user()->password)) {
+                return ApiResponse::sendResponse(401, 'The old password does not match .', null);
+            }
 
         Auth::user()->update(
             $request->validated() + ['password' => Hash::make($request->password)]
@@ -46,7 +47,7 @@ class TeacherController extends Controller
             return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', null);
         }
 
-        if (! $user) {
+        if (!$user) {
             return ApiResponse::sendResponse(200, 'User not found', null);
         }
 

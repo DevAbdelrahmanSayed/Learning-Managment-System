@@ -3,9 +3,10 @@
 namespace Modules\Teacher\Http\Requests;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
 class UpdateTeacherRequest extends FormRequest
@@ -15,15 +16,15 @@ class UpdateTeacherRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
-            'name' => ['required', 'string', 'min:3', 'max:25'],
-            'email' => ['required', 'email', Rule::unique('teachers', 'email')->ignore(auth()->user()->id)],
-            'about' => ['required', 'string', 'max:255'],
-            'profile' => ['required', 'string', 'max:255'],
-            'old_password' => ['required', 'max:255'],
-            'password' => ['required', 'max:255', Password::defaults()],
+            'name' => ['string', 'min:3', 'max:25'],
+            'email' => ['email', Rule::unique('teachers', 'email')->ignore(auth()->user()->id)],
+            'about' => ['string', 'max:255'],
+            'profile' => ['string', 'max:255'],
+            'password' => [ Rule::requiredIf(function () use ($request) { return $request->has('old_password'); }),'max:255', Password::defaults() ],
+            'old_password' => [ Rule::requiredIf(function () use ($request) { return $request->has('password'); }), 'max:255' ],
         ];
     }
 
