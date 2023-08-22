@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Modules\Auth\Transformers\TeacherResource;
+use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
 
 class TeacherController extends Controller
@@ -39,6 +40,20 @@ class TeacherController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = Teacher::find($id);
+
+        if ($id != Auth::user()->id) {
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', null);
+        }
+
+        if (! $user) {
+            return ApiResponse::sendResponse(200, 'User not found', null);
+        }
+
+        $user->delete();
+        Auth::guard('teacher')->logout();
+
+        return ApiResponse::sendResponse(200, 'User deleted successfully .', null);
+
     }
 }

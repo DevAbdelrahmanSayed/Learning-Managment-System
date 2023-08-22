@@ -3,6 +3,7 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\OTP;
 use App\Mail\EmailVerification;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -28,8 +29,7 @@ class ResetPasswordController extends Controller
         $teacher = Teacher::where('email', $email)->first();
 
         if ($teacher) {
-            $registerController = new RegisterController();
-            $registerController->otpGenerate($teacher);
+            OTP::generate($teacher);
             Mail::to($teacher->email)->send(new EmailVerification($teacher->otp, $teacher->name));
 
             return ApiResponse::sendResponse(200, 'OTP has been sent to your email.', []);
