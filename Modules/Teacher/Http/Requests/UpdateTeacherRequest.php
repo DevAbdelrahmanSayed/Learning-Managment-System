@@ -20,11 +20,8 @@ class UpdateTeacherRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:25'],
             'email' => ['required', 'email', Rule::unique('teachers', 'email')->ignore(auth()->user()->id)],
-<<<<<<< HEAD
-=======
             'about' => ['required', 'string', 'max:255'],
             'profile' => ['required', 'string', 'max:255'],
->>>>>>> refs/remotes/origin/main
             'old_password' => ['required', 'max:255'],
             'password' => ['required', 'max:255', Password::defaults()],
         ];
