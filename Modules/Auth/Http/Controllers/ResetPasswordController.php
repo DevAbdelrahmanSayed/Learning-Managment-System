@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Modules\Teacher\Entities\Teacher;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class ResetPasswordController extends Controller
 {
@@ -30,9 +31,13 @@ class ResetPasswordController extends Controller
 
         if ($teacher) {
             OTP::generate($teacher);
+            $verificationToken = JWTAuth::fromUser($teacher);
+            $response = [
+                'token'=>$verificationToken
+            ];
             Mail::to($teacher->email)->send(new EmailVerification($teacher->otp, $teacher->name));
 
-            return ApiResponse::sendResponse(200, 'OTP has been sent to your email.', []);
+            return ApiResponse::sendResponse(200, 'OTP has been sent to your email.', $response);
         }
 
         return ApiResponse::sendResponse(400, 'User not found', []);

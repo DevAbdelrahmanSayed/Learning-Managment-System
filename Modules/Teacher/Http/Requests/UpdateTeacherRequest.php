@@ -3,6 +3,8 @@
 namespace Modules\Teacher\Http\Requests;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\ApiValidationHelper;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -28,12 +30,9 @@ class UpdateTeacherRequest extends FormRequest
         ];
     }
 
-    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    protected function failedValidation(Validator $validator)
     {
-        if ($this->is('api/*')) {
-            $response = ApiResponse::sendResponse(422, 'Validation errros', $validator->errors());
-        }
-        throw new ValidationException($validator, $response);
+        ApiValidationHelper::failedValidation($validator);
     }
 
     /**
