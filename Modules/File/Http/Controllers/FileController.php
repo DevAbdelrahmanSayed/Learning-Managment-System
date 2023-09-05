@@ -26,14 +26,14 @@ class FileController extends Controller
         }
         $uploadedFilePath = $request->file('fileUrl')->storePublicly('course_file/files', 's3');
 
-        $fileInsert = DB::table('files')->insert([
+        $fileInsert = DB::table('files')->insertGetId([
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
             'section_id' => $request->section_id,
             'teacher_id' => auth()->user()->id,
             'created_at' => now(),
         ]);
         if ($fileInsert) {
-            return ApiResponse::sendResponse(201, 'Your files uploaded successfully', []);
+            return ApiResponse::sendResponse(201, 'Your files uploaded successfully', ['File_id'=>$fileInsert]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to upload the file', []);
@@ -48,7 +48,6 @@ class FileController extends Controller
     {
 
         $section = DB::table('sections')->find($request->section_id);
-        $course = DB::table('courses')->find($request->course_id);
 
         $file = File::find($fileId);
         if (! $file) {
@@ -70,11 +69,10 @@ class FileController extends Controller
         $fileUpdate = DB::table('files')->update([
             'fileUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedFilePath",
             'section_id' => $request->section_id,
-            'course_id' => $request->course_id,
             'updated_at' => now(),
         ]);
         if ($fileUpdate) {
-            return ApiResponse::sendResponse(201, 'Your files updated successfully', []);
+            return ApiResponse::sendResponse(201, 'Your files updated successfully', ['File_id'=>$fileId]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to updated the file', []);

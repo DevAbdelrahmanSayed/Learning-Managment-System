@@ -3,11 +3,14 @@
 namespace Modules\Course\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\CourseRequest;
 use Modules\Section\Transformers\CourseResource;
@@ -57,9 +60,9 @@ class CourseController extends Controller
             'slug' => Str::slug($request->title).'.'.Str::uuid(),
             'teacher_id' => Auth::guard('teacher')->user()->id,
         ];
-        $course = DB::table('courses')->insert($data);
+        $course = DB::table('courses')->insertGetId($data);
         if ($course) {
-            return ApiResponse::sendResponse(201, 'your courses created successfully', []);
+            return ApiResponse::sendResponse(201, 'your courses created successfully', ['Course_id'=>$course]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to create the course', []);
@@ -100,14 +103,23 @@ class CourseController extends Controller
 
         $course = DB::table('courses')->where('id', $courseId)->update($data);
         if ($course) {
-            return ApiResponse::sendResponse(200, 'course updated successfully', []);
+            return ApiResponse::sendResponse(200, 'course updated successfully', ['Course_id'=>$courseId]);
         }
 
         return ApiResponse::sendResponse(200, 'Course updated successfully', []);
     }
 
-    public function destroy($courseId)
+    public function destroy(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'course_id' => 'required|exists:courses,id', // Ensure 'course_id' exists in the 'courses' table
+        ]);
+        if ($validator->fails()) {
+            return ApiResponse::sendResponse(400, 'Validation failed', $validator->errors());
+        }
+        $courseId = $request->input('course_id');
+
         $course = DB::table('courses')->find($courseId);
 
         if (! $course) {

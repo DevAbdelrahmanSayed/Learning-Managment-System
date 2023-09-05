@@ -22,16 +22,15 @@ class SectionController extends Controller
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not allowed to take this action', null);
         }
 
-        $insertedSection = DB::table('sections')->insert([
+        $insertedSection = DB::table('sections')->insertGetId([
             'title' => $request->title,
-            'description' => $request->description,
             'course_id' => $request->course_id,
             'teacher_id' => auth()->user()->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         if ($insertedSection) {
-            return ApiResponse::sendResponse(201, 'Section created successfully', []);
+            return ApiResponse::sendResponse(201, 'Section created successfully', ['Section_id'=>$insertedSection]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to create the section', []);
@@ -67,12 +66,12 @@ class SectionController extends Controller
         }
         $data = [
             'title' => $request->title,
-            'description' => $request->description,
+
             'updated_at' => now(),
         ];
         $sectionUpdate = DB::table('sections')->where('id', $sectionId)->update($data);
         if ($sectionUpdate) {
-            return ApiResponse::sendResponse(200, 'Section updated successfully', []);
+            return ApiResponse::sendResponse(200, 'Section updated successfully', ['Section_id'=>$sectionId]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to update the section', []);

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('section_id')->references('id')->on('sections')->cascadeOnDelete();
             $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
+            $table->boolean('visible')->default(false);
             $table->string('title');
-            $table->string('description');
+
             $table->string('videoUrl');
             $table->timestamps();
         });
