@@ -2,14 +2,12 @@
 
 namespace Modules\Teacher\Http\Requests;
 
-use App\Helpers\ApiResponse;
 use App\Helpers\ApiValidationHelper;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 
 class UpdateTeacherRequest extends FormRequest
 {

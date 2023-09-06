@@ -5,7 +5,7 @@ namespace Modules\Section\Entities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Course\Entities\Course;
-use Modules\File\Entities\file;
+use Modules\File\Entities\File;
 use Modules\Video\Entities\Video;
 
 class Section extends Model

@@ -2,6 +2,8 @@
 
 namespace Modules\File\Http\Requests;
 
+use App\Helpers\ApiValidationHelper;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FileRequest extends FormRequest
@@ -18,7 +20,10 @@ class FileRequest extends FormRequest
             'section_id' => 'required|Integer|exists:sections,id',
         ];
     }
-
+    protected function failedValidation(Validator $validator)
+    {
+        ApiValidationHelper::failedValidation($validator);
+    }
     /**
      * Determine if the user is authorized to make this request.
      *

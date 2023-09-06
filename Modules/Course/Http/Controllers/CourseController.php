@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\CourseRequest;
 use Modules\Section\Transformers\CourseResource;
+use Modules\Teacher\Entities\Teacher;
 
 class CourseController extends Controller
 {
@@ -69,8 +70,11 @@ class CourseController extends Controller
 
     }
 
-    public function show(CourseRequest $request)
+    public function show($teacherId)
     {
+
+
+
     }
 
     public function update(CourseRequest $request, $courseId)

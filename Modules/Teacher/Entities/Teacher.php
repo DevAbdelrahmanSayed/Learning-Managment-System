@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Course\Entities\Course;
+use Modules\Section\Entities\Section;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Teacher extends Authenticatable implements JWTSubject
@@ -83,5 +84,10 @@ class Teacher extends Authenticatable implements JWTSubject
     public function courses()
     {
         return $this->hasMany(Course::class, 'teacher_id');
+    }
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'teacher_id');
+
     }
 }

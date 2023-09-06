@@ -3,22 +3,19 @@
 namespace Modules\Teacher\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Modules\Auth\Transformers\TeacherResource;
+use Modules\Course\Entities\Course;
 use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
+use Modules\Teacher\Transformers\CourseResource;
+use Modules\Teacher\Transformers\SectionResource;
 
 class TeacherController extends Controller
 {
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Renderable
-     */
+
     public function update(UpdateTeacherRequest $request)
     {
         if ($request->has(['password', 'old_password']))
@@ -32,13 +29,43 @@ class TeacherController extends Controller
 
         return ApiResponse::sendResponse(200, 'User\'s data updated successfully .', new TeacherResource(Auth::user()));
     }
+    public function getCoursesCreatedByTeacher($teacherId)
+    {
+        $teacher = Teacher::with('courses')->find($teacherId);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Renderable
-     */
+        if (!$teacher) {
+            return ApiResponse::sendResponse(404, 'Teacher not found', null);
+        }
+
+        $user = auth()->user();
+
+        if ($teacher->id !== $user->id) {
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+        }
+
+        // Return the courses associated with the teacher
+        return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  CourseResource::collection($teacher->courses));
+    }
+    public function getSectionCreatedByTeacher($courseId)
+    {
+
+        $course = Course::with('sections')->find($courseId);
+
+        if (!$course) {
+            return ApiResponse::sendResponse(404, 'Course not found', null);
+        }
+
+        $user = auth()->user();
+
+        if ($course->teacher_id !== $user->id) {
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+        }
+
+        return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  SectionResource::collection($course->sections));
+    }
+
+
+
     public function destroy($id)
     {
         $user = Teacher::find($id);

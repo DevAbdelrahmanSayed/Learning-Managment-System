@@ -17,4 +17,6 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 Route::middleware(['auth:teacher'])->group(function () {
     Route::put('teacher', [TeacherController::class, 'update']);
     Route::delete('teacher/{id}', [TeacherController::class, 'destroy']);
+    Route::get('teacher/{id}/courses', [TeacherController::class, 'getCoursesCreatedByTeacher']);
+    Route::get('teacher/{courseId}/sections', [TeacherController::class, 'getSectionCreatedByTeacher']);
 });
