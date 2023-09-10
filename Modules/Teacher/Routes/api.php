@@ -19,6 +19,6 @@ Route::middleware(['auth:teacher'])->group(function () {
     Route::delete('teacher/{id}', [TeacherController::class, 'destroy']);
     Route::get('teacher/courses', [TeacherController::class, 'getCoursesCreatedByTeacher']);
     Route::get('teacher/{courseId}/sections', [TeacherController::class, 'getSectionCreatedByTeacher']);
-    Route::get('teacher/{sectionId}/video', [TeacherController::class, 'getVideoCreatedByTeacher']);
+    Route::get('teacher/{sectionId}/videos', [TeacherController::class, 'getVideoCreatedByTeacher']);
     Route::get('teacher/{sectionId}/files', [TeacherController::class, 'getFilesCreatedByTeacher']);
 });

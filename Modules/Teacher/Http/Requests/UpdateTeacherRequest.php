@@ -11,11 +11,11 @@ use Illuminate\Validation\Rules\Password;
 
 class UpdateTeacherRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+
+    protected function failedValidation(Validator $validator)
+    {
+        ApiValidationHelper::failedValidation($validator);
+    }
     public function rules(Request $request)
     {
         return [
@@ -28,16 +28,6 @@ class UpdateTeacherRequest extends FormRequest
         ];
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-        ApiValidationHelper::failedValidation($validator);
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;

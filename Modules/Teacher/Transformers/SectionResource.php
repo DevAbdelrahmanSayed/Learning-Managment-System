@@ -15,9 +15,10 @@ class SectionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'title' => $this->title,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'sectionId' =>$this->id,
+            'sectionTitle' => $this->title,
+            'sectionCreatedAt' => $this->created_at,
+            'sectionUpdatedAt' => $this->updated_at,
         ];
     }
 }

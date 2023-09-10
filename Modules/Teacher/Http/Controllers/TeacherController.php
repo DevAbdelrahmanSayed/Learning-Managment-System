@@ -43,7 +43,6 @@ class TeacherController extends Controller
         }
 
 
-
         if ($teacher->id !== $user) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
         }
@@ -102,10 +101,8 @@ class TeacherController extends Controller
 
 
 
-        return ApiResponse::sendResponse(200, 'files retrieved successfully',  FileResource::collection($section->files));
+        return ApiResponse::sendResponse(200, 'files retrieved successfully',   FileResource::collection($section->files));
     }
-
-
 
 
 
@@ -113,18 +110,18 @@ class TeacherController extends Controller
     {
         $user = Teacher::find($id);
 
-        if ($id != Auth::user()->id) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', null);
+        if ($id !== Auth::user()->id) {
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', []);
         }
 
         if (!$user) {
-            return ApiResponse::sendResponse(200, 'User not found', null);
+            return ApiResponse::sendResponse(200, 'User not found', []);
         }
 
         $user->delete();
         Auth::guard('teacher')->logout();
 
-        return ApiResponse::sendResponse(200, 'User deleted successfully .', null);
+        return ApiResponse::sendResponse(200, 'User deleted successfully .', []);
 
     }
 }

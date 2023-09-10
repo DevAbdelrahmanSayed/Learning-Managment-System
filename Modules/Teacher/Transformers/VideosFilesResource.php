@@ -16,11 +16,12 @@ class VideosFilesResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'videoId'=>$this->id,
             'videoTitle'=>$this->title,
             'videoUrl'=>$this->videoUrl,
             'videoVisible'=>$this->visible,
-            'created_at' => $this->vcreated_at,
-            'updated_at' => $this->updated_at,
+            'videoCreatedAt' => $this->vcreated_at,
+            'videoUpdatedAt' => $this->updated_at,
 
 
         ];
