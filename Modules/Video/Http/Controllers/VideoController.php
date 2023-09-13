@@ -7,6 +7,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Modules\Section\Entities\Section;
+use Modules\Video\Entities\Video;
 use Modules\Video\Http\Requests\VideoRequest;
 
 class VideoController extends Controller
@@ -19,8 +21,10 @@ class VideoController extends Controller
     public function store(VideoRequest $request)
     {
         $section = DB::table('sections')->find($request->section_id);
-
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
+        if (! $section) {
+            return ApiResponse::sendResponse(404, 'section not found', []);
+        }
+        $authenticatedTeacher = Auth::guard('teacher')->user()->getKey();
 
         if ($section->teacher_id !== $authenticatedTeacher) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this video', []);
@@ -54,19 +58,21 @@ class VideoController extends Controller
 
     public function update(VideoRequest $request, $videoId)
     {
-        $video = DB::table('videos')->find($videoId);
-        $section = DB::table('sections')->find($request->section_id);
+        $section =Section::find($request->section_id);
+        if (! $section) {
+            return ApiResponse::sendResponse(404, 'section not found', []);
+        }
+        $video = Video::find($videoId);
         if (! $video) {
             return ApiResponse::sendResponse(404, 'Video not found', []);
         }
 
-        $authenticatedTeacherId = Auth::guard('teacher')->user()->id;
+        $authenticatedTeacherId = Auth::guard('teacher')->user()->getKey();
 
         if ($video->teacher_id !== $authenticatedTeacherId) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this video', []);
         }
 
-        // Delete the old video from storage
         if ($video->videoUrl) {
             $existingVideoPath = basename(parse_url($video->videoUrl, PHP_URL_PATH));
             if (Storage::disk('s3')->exists("course_videos/videos/{$existingVideoPath}")) {
@@ -83,20 +89,23 @@ class VideoController extends Controller
             'updated_at' => now(),
         ];
 
-        DB::table('videos')->where('id', $videoId)->update($data);
+        $video = Video::where('id', $videoId)->update($data);
+      if ($video){
+          return ApiResponse::sendResponse(200, 'Video updated successfully', ['Video_id'=>$videoId]);
+      }
 
-        return ApiResponse::sendResponse(200, 'Video updated successfully', ['Video_id'=>$videoId]);
+        return ApiResponse::sendResponse(200, 'Failed to updated the Video', []);
     }
 
     public function destroy($videoId)
     {
-        $video = DB::table('videos')->find($videoId);
+        $video = Video::find($videoId);
 
-        if (! $video) {
+        if (!$video) {
             return ApiResponse::sendResponse(404, 'Video not found', []);
         }
 
-        $authenticatedTeacherId = Auth::guard('teacher')->user()->id;
+        $authenticatedTeacherId = Auth::guard('teacher')->user()->getKey();
 
         if ($video->teacher_id !== $authenticatedTeacherId) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this video', []);
@@ -104,13 +113,19 @@ class VideoController extends Controller
 
         if ($video->videoUrl) {
             $existingVideoPath = basename(parse_url($video->videoUrl, PHP_URL_PATH));
-            if (Storage::disk('s3')->exists("course_videos/videos/{$existingVideoPath}")) {
-                Storage::disk('s3')->delete("course_videos/videos/{$existingVideoPath}");
+            $s3Disk = Storage::disk('s3');
+
+            if ($s3Disk->exists("course_videos/videos/{$existingVideoPath}")) {
+                $s3Disk->delete("course_videos/videos/{$existingVideoPath}");
             }
         }
 
-        DB::table('videos')->where('id', $videoId)->delete();
+        if ($video->delete()) {
+            return ApiResponse::sendResponse(200, 'Video deleted successfully', []);
+        }
 
-        return ApiResponse::sendResponse(200, 'Video deleted successfully', []);
+        return ApiResponse::sendResponse(200, 'Failed to delete the Video', []);
     }
+
+
 }

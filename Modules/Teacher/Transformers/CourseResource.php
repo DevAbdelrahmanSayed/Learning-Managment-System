@@ -3,7 +3,6 @@
 namespace Modules\Teacher\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Section\Transformers\SectionResource;
 
 class CourseResource extends JsonResource
 {

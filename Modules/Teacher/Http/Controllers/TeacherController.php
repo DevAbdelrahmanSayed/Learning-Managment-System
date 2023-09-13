@@ -3,9 +3,11 @@
 namespace Modules\Teacher\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Modules\Auth\Transformers\TeacherResource;
 use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
@@ -13,29 +15,57 @@ use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
 use Modules\Teacher\Transformers\CourseResource;
 use Modules\Teacher\Transformers\FileResource;
+use Modules\Teacher\Transformers\ProfileTeacherResource;
 use Modules\Teacher\Transformers\SectionResource;
 use Modules\Teacher\Transformers\VideosFilesResource;
-use Modules\Video\Entities\Video;
 
 class TeacherController extends Controller
 {
+    public function index()
+    {
+
+        $teacher = Teacher::find(Auth::guard('teacher')->user()->getKey());
+        if (!$teacher) {
+            return ApiResponse::sendResponse(404, 'Teacher not found', []);
+        }
+        return ApiResponse::sendResponse(200, 'Teacher profile  retrieved successfully', new ProfileTeacherResource($teacher));
+
+    }
+
 
     public function update(UpdateTeacherRequest $request)
     {
-        if ($request->has(['password', 'old_password']))
-            if (!Hash::check($request->old_password, auth()->user()->password)) {
-                return ApiResponse::sendResponse(401, 'The old password does not match .', []);
+        $teacher = Auth::guard('teacher')->user();
+
+        if ($request->has(['password', 'old_password'])) {
+            if (!Hash::check($request->old_password, $teacher->password)) {
+                return ApiResponse::sendResponse(401, 'The old password does not match.', []);
             }
+        }
 
-        Auth::user()->update(
-            $request->validated() + ['password' => Hash::make($request->password)]
-        );
+        if ($request->file('profile')) {
+            $profilePath = $request->file('profile')->storePublicly('profile_photos/photo', 's3');
+            $existingPhotoPath = basename(parse_url($teacher->profile, PHP_URL_PATH));
+            if ( Storage::disk('s3')->exists("profile_photos/photo/{$existingPhotoPath}")) {
+                Storage::disk('s3')->delete("profile_photos/photo/{$existingPhotoPath}");
+            }
+        }
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'profile' => "https://online-bucket.s3.amazonaws.com/$profilePath",
+            'about' => $request->about,
+            'password' => Hash::make($request->password),
+            'updated_at' => now(),
+        ];
+        $teacher->update($data);
 
-        return ApiResponse::sendResponse(200, 'User\'s data updated successfully .', new TeacherResource(Auth::user()));
+        return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource($teacher));
     }
+
     public function getCoursesCreatedByTeacher()
     {
-        $user = auth()->user()->id;
+        $user = Auth::guard('teacher')->user()->getKey();
         $teacher = Teacher::with('courses')->find($user);
 
         if (!$teacher) {
@@ -44,10 +74,9 @@ class TeacherController extends Controller
 
 
         if ($teacher->id !== $user) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
-        // Return the courses associated with the teacher
         return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  CourseResource::collection($teacher->courses));
     }
     public function getSectionCreatedByTeacher($courseId)
@@ -59,10 +88,8 @@ class TeacherController extends Controller
             return ApiResponse::sendResponse(404, 'Course not found', []);
         }
 
-        $user = auth()->user();
-
-        if ($course->teacher_id !== $user->id) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+        if ($course->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
         return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  SectionResource::collection($course->sections));
@@ -75,13 +102,10 @@ class TeacherController extends Controller
             return ApiResponse::sendResponse(404, 'Section not found', []);
         }
 
-        $user = auth()->user();
 
-        if ($section->teacher_id !== $user->id) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
-
-
 
         return ApiResponse::sendResponse(200, 'Videos retrieved successfully',  VideosFilesResource::collection($section->Videos));
     }
@@ -95,8 +119,8 @@ class TeacherController extends Controller
 
         $user = auth()->user();
 
-        if ($section->teacher_id !== $user->id) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
+            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
 
@@ -105,12 +129,11 @@ class TeacherController extends Controller
     }
 
 
-
     public function destroy($id)
     {
         $user = Teacher::find($id);
 
-        if ($id !== Auth::user()->id) {
+        if ($id !== Auth::guard('teacher')->user()->getKey()) {
             return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', []);
         }
 

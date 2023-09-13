@@ -20,13 +20,14 @@ class UpdateTeacherRequest extends FormRequest
     {
         return [
             'name' => ['string', 'min:3', 'max:25'],
-            'email' => ['email', Rule::unique('teachers', 'email')->ignore(auth()->user()->id)],
+            'email' => ['email', Rule::unique('teachers', 'email')->ignore(auth()->guard('teacher')->user()->id)],
             'about' => ['string', 'max:255'],
-            'profile' => ['string', 'max:255'],
-            'password' => [ Rule::requiredIf(function () use ($request) { return $request->has('old_password'); }),'max:255', Password::defaults() ],
-            'old_password' => [ Rule::requiredIf(function () use ($request) { return $request->has('password'); }), 'max:255' ],
+            'profile' => ['max:255', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'password' => [Rule::requiredIf(function () use ($request) { return $request->has('old_password'); }), 'max:255', Password::defaults()],
+            'old_password' => [Rule::requiredIf(function () use ($request) { return $request->has('password'); }), 'max:255'],
         ];
     }
+
 
     public function authorize()
     {

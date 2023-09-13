@@ -77,15 +77,16 @@ class CourseController extends Controller
 
     }
 
+
     public function update(CourseRequest $request, $courseId)
     {
-        $course = DB::table('courses')->find($courseId);
+        $course = Course::find($courseId);
         if (! $course) {
             return ApiResponse::sendResponse(404, 'Course not found', []);
         }
-        $authenticatedTeacherId = Auth::guard('teacher')->id();
+        $authenticatedTeacherId = Auth::guard('teacher')->user()->id;
         if ($course->teacher_id !== $authenticatedTeacherId) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this section', []);
+            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this course', []);
         }
         $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
 
@@ -105,25 +106,13 @@ class CourseController extends Controller
             'updated_at' => now(),
         ];
 
-        $course = DB::table('courses')->where('id', $courseId)->update($data);
-        if ($course) {
-            return ApiResponse::sendResponse(200, 'course updated successfully', ['Course_id'=>$courseId]);
-        }
+          Course::where('id', $courseId)->update($data);
 
-        return ApiResponse::sendResponse(200, 'Course updated successfully', []);
+            return ApiResponse::sendResponse(200, 'course updated successfully', ['Course_id'=>$courseId]);
     }
 
-    public function destroy(Request $request)
+    public function destroy($courseId)
     {
-
-        $validator = Validator::make($request->all(), [
-            'course_id' => 'required|exists:courses,id', // Ensure 'course_id' exists in the 'courses' table
-        ]);
-        if ($validator->fails()) {
-            return ApiResponse::sendResponse(400, 'Validation failed', $validator->errors());
-        }
-        $courseId = $request->input('course_id');
-
         $course = DB::table('courses')->find($courseId);
 
         if (! $course) {

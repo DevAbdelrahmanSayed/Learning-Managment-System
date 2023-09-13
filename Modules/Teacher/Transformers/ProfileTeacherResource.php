@@ -5,7 +5,7 @@ namespace Modules\Teacher\Transformers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SectionResource extends JsonResource
+class ProfileTeacherResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,10 @@ class SectionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'sectionId' => $this->id,
-            'sectionTitle' => $this->title,
-            'sectionCreatedAt' => $this->created_at,
-            'sectionUpdatedAt' => $this->updated_at,
+            'teacherName' => $this->name,
+            'teacherEmail' => $this->email,
+            'teacherAbout' => $this->about,
+            'teacherProfile' => $this->profile,
         ];
     }
 }
