@@ -10,7 +10,6 @@ class StoreCourseAction
 {
     public function execute($requestData, Teacher $teacher)
     {
-
         $photoPath = $requestData->file('photo')->storePublicly('course_photos/photo', 's3');
         $data = [
             'title' => $requestData->title,
