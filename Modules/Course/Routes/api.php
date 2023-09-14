@@ -15,3 +15,4 @@ use Modules\Course\Http\Controllers\CourseController;
 */
 
 Route::apiResource('courses', CourseController::class)->middleware(['auth:teacher', 'Verify:teacher']);
+Route::get('teacher/courses', [CourseController::class, 'getCoursesCreatedByTeacher'])->middleware(['auth:teacher', 'Verify:teacher']);

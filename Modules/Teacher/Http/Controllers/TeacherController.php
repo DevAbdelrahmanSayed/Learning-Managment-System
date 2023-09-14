@@ -3,7 +3,6 @@
 namespace Modules\Teacher\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +12,6 @@ use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
 use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
-use Modules\Teacher\Transformers\CourseResource;
 use Modules\Teacher\Transformers\FileResource;
 use Modules\Teacher\Transformers\ProfileTeacherResource;
 use Modules\Teacher\Transformers\SectionResource;
@@ -63,22 +61,7 @@ class TeacherController extends Controller
         return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource($teacher));
     }
 
-    public function getCoursesCreatedByTeacher()
-    {
-        $user = Auth::guard('teacher')->user()->getKey();
-        $teacher = Teacher::with('courses')->find($user);
 
-        if (!$teacher) {
-            return ApiResponse::sendResponse(404, 'Teacher not found', []);
-        }
-
-
-        if ($teacher->id !== $user) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  CourseResource::collection($teacher->courses));
-    }
     public function getSectionCreatedByTeacher($courseId)
     {
 
@@ -129,13 +112,10 @@ class TeacherController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy()
     {
-        $user = Teacher::find($id);
-
-        if ($id !== Auth::guard('teacher')->user()->getKey()) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action. ', []);
-        }
+        $teacher =Auth::guard('teacher')->user()->getKey();
+        $user = Teacher::find($teacher);
 
         if (!$user) {
             return ApiResponse::sendResponse(200, 'User not found', []);

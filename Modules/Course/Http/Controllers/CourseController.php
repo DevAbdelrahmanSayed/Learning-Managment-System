@@ -3,134 +3,53 @@
 namespace Modules\Course\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
+use Modules\Course\Actions\DestroyCourseAction;
+use Modules\Course\Actions\GetCoursesCreatedByTeacherAction;
+use Modules\Course\Actions\IndexCourseAction;
+use Modules\Course\Actions\StoreCourseAction;
+use Modules\Course\Actions\UpdateCourseAction;
 use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\CourseRequest;
-use Modules\Section\Transformers\CourseResource;
-use Modules\Teacher\Entities\Teacher;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(IndexCourseAction $IndexCourseAction)
     {
         $allCourses = Course::with('teachers')->latest()->paginate(2);
-        if (count($allCourses) > 0) {
-            if ($allCourses->total() > $allCourses->perPage()) {
-                $data = [
-                    'records' => CourseResource::collection($allCourses),
-                    'pagination' => [
-                        'currentPage' => $allCourses->currentPage(),
-                        'perPage' => $allCourses->perPage(),
-                        'total' => $allCourses->total(),
-                        'links' => [
-                            'first' => $allCourses->url(1),
-                            'last' => $allCourses->url($allCourses->lastPage()),
-                            'prev' => $allCourses->previousPageUrl(),
-                            'next' => $allCourses->nextPageUrl(),
-                        ],
-                    ],
-                ];
-            } else {
-                $data = CourseResource::collection($allCourses);
-            }
 
-            return ApiResponse::sendResponse(200, 'All Courses retrieved successfully', $data);
-        }
+        $action = $IndexCourseAction->execute($allCourses);
 
-        return ApiResponse::sendResponse(200, 'No courses Available', []);
+        return ($action['status'] === 'success')
+            ? ApiResponse::sendResponse(JsonResponse::HTTP_OK, $action['message'],$action['data'])
+            : ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, $action['message']);
+    }
+    public function store(CourseRequest $request, StoreCourseAction $StoreCourseAction)
+    {
+        $action = $StoreCourseAction->execute($request,Auth::guard('teacher')->user());
+
+        return ($action['status'] === 'success')
+            ? ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, $action['message'],$action['data'])
+            : ApiResponse::sendResponse(JsonResponse::HTTP_OK, $action['message']);
+    }
+    public function show($teacherId){}
+    public function getCoursesCreatedByTeacher(GetCoursesCreatedByTeacherAction $getCourses)
+    {
+        $action = $getCourses->execute(Auth::guard('teacher')->user());
+        return ApiResponse::sendResponse($action['status'], $action['message'], $action['data']);
+    }
+    public function update(CourseRequest $request, $courseId,UpdateCourseAction $updateCourseAction)
+    {
+        $action = $updateCourseAction->execute(Auth::guard('teacher')->user(),$courseId,$request);
+        return ApiResponse::sendResponse($action['status'], $action['message'], $action['data']);
     }
 
-    public function store(CourseRequest $request)
+    public function destroy($courseId,DestroyCourseAction $destroyCourseAction)
     {
 
-        $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description,
-            'photo' => "https://online-bucket.s3.amazonaws.com/$photoPath",
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'created_at' => now(),
-            'slug' => Str::slug($request->title).'.'.Str::uuid(),
-            'teacher_id' => Auth::guard('teacher')->user()->id,
-        ];
-        $course = DB::table('courses')->insertGetId($data);
-        if ($course) {
-            return ApiResponse::sendResponse(201, 'your courses created successfully', ['Course_id'=>$course]);
-        }
-
-        return ApiResponse::sendResponse(200, 'Failed to create the course', []);
-
-    }
-
-    public function show($teacherId)
-    {
-
-
-
-    }
-
-
-    public function update(CourseRequest $request, $courseId)
-    {
-        $course = Course::find($courseId);
-        if (! $course) {
-            return ApiResponse::sendResponse(404, 'Course not found', []);
-        }
-        $authenticatedTeacherId = Auth::guard('teacher')->user()->id;
-        if ($course->teacher_id !== $authenticatedTeacherId) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this course', []);
-        }
-        $photoPath = $request->file('photo')->storePublicly('course_photos/photo', 's3');
-
-        if ($course->photo) {
-            $existingPhotoPath = basename(parse_url($course->photo, PHP_URL_PATH));
-            if (Storage::disk('s3')->exists("course_photos/photo/{$existingPhotoPath}")) {
-                Storage::disk('s3')->delete("course_photos/photo/{$existingPhotoPath}");
-            }
-        }
-
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description,
-            'photo' => "https://online-bucket.s3.amazonaws.com/$photoPath",
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'updated_at' => now(),
-        ];
-
-          Course::where('id', $courseId)->update($data);
-
-            return ApiResponse::sendResponse(200, 'course updated successfully', ['Course_id'=>$courseId]);
-    }
-
-    public function destroy($courseId)
-    {
-        $course = DB::table('courses')->find($courseId);
-
-        if (! $course) {
-            return ApiResponse::sendResponse(200, 'course not found', []);
-        }
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-        if ($course->teacher_id !== $authenticatedTeacher) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this course', []);
-        }
-        if ($course->photo) {
-            $existingPhotoPath = basename(parse_url($course->photo, PHP_URL_PATH));
-            if (Storage::disk('s3')->exists("course_photos/photo/{$existingPhotoPath}")) {
-                Storage::disk('s3')->delete("course_photos/photo/{$existingPhotoPath}");
-            }
-        }
-        DB::table('courses')->where('id', $courseId)->delete();
-
-        return ApiResponse::sendResponse(200, 'course deleted successfully', []);
-
+        $action = $destroyCourseAction->execute(Auth::guard('teacher')->user(),$courseId);
+        return ApiResponse::sendResponse($action['status'], $action['message'], $action['data']);
     }
 }

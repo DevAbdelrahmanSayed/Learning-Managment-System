@@ -15,10 +15,10 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 */
 
 Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
-    Route::put('/', [TeacherController::class, 'update']);
-    Route::get('/profile', [TeacherController::class, 'index']);
-    Route::delete('/{id}', [TeacherController::class, 'destroy']);
-    Route::get('/courses', [TeacherController::class, 'getCoursesCreatedByTeacher']);
+    Route::put('/', [TeacherController::class, 'index']);
+    Route::get('/profile', [TeacherController::class, 'update']);
+    Route::delete('/destroy', [TeacherController::class, 'destroy']);
+
     Route::get('/{courseId}/sections', [TeacherController::class, 'getSectionCreatedByTeacher']);
     Route::get('/{sectionId}/videos', [TeacherController::class, 'getVideoCreatedByTeacher']);
     Route::get('/{sectionId}/files', [TeacherController::class, 'getFilesCreatedByTeacher']);

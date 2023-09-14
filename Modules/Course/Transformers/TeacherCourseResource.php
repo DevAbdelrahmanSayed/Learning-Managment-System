@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Teacher\Transformers;
+namespace Modules\Course\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CourseResource extends JsonResource
+class TeacherCourseResource extends JsonResource
 {
 
     public function toArray($request)
