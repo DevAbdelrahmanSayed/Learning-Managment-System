@@ -2,7 +2,6 @@
 
 namespace Modules\Course\Actions;
 
-use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Modules\Course\Entities\Course;
@@ -10,10 +9,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UpdateCourseAction
 {
-    public function execute($teacher,$courseId,$requestData)
+    public function execute($teacher, $courseId, $requestData)
     {
         $course = Course::find($courseId);
-        if (!$course) {
+        if (! $course) {
             return [
                 'status' => JsonResponse::HTTP_NOT_FOUND,
                 'message' => 'Course not found.',
@@ -44,7 +43,8 @@ class UpdateCourseAction
             'category_id' => $requestData->category_id,
             'updated_at' => now(),
         ];
-          $course->update($data);
+        $course->update($data);
+
         return [
             'status' => JsonResponse::HTTP_OK,
             'message' => 'course updated successfully.',

@@ -8,11 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
-
 use Modules\Section\Http\Requests\SectionRequest;
 use Modules\Section\Http\Requests\SectionUpdateRequest;
 use Modules\Section\Transformers\CourseResource;
-
 
 class SectionController extends Controller
 {
@@ -32,7 +30,7 @@ class SectionController extends Controller
             'updated_at' => now(),
         ]);
         if ($insertedSection) {
-            return ApiResponse::sendResponse(201, 'Section created successfully', ['Section_id'=>$insertedSection]);
+            return ApiResponse::sendResponse(201, 'Section created successfully', ['Section_id' => $insertedSection]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to create the section', []);
@@ -59,7 +57,7 @@ class SectionController extends Controller
 
         $section = Section::find($sectionId);
 
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(200, 'Section not found', []);
         }
         $authenticatedTeacher = Auth::guard('teacher')->user()->id;
@@ -72,7 +70,7 @@ class SectionController extends Controller
         ];
         $sectionUpdate = DB::table('sections')->where('id', $sectionId)->update($data);
         if ($sectionUpdate) {
-            return ApiResponse::sendResponse(200, 'Section updated successfully', ['Section_id'=>$sectionId]);
+            return ApiResponse::sendResponse(200, 'Section updated successfully', ['Section_id' => $sectionId]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to update the section', []);

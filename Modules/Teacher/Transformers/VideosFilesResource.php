@@ -23,7 +23,6 @@ class VideosFilesResource extends JsonResource
             'videoCreatedAt' => $this->vcreated_at,
             'videoUpdatedAt' => $this->updated_at,
 
-
         ];
     }
 }

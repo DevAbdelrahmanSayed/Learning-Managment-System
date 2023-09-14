@@ -33,7 +33,7 @@ class StoreCourseAction
 
         return [
             'status' => 'error',
-            'message' => 'Failed to create the course'
+            'message' => 'Failed to create the course',
         ];
     }
 }

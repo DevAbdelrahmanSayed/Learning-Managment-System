@@ -6,7 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TeacherCourseResource extends JsonResource
 {
-
     public function toArray($request)
     {
         return [

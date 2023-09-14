@@ -49,11 +49,11 @@ class FileController extends Controller
     {
 
         $section = Section::find($request->section_id);
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(404, 'section not found', []);
         }
         $file = File::find($fileId);
-        if (!$file) {
+        if (! $file) {
             return ApiResponse::sendResponse(404, 'File not found', []);
         }
 
@@ -86,7 +86,7 @@ class FileController extends Controller
     {
         $file = File::find($fileId);
 
-        if (!$file) {
+        if (! $file) {
             return ApiResponse::sendResponse(404, 'File not found', []);
         }
 

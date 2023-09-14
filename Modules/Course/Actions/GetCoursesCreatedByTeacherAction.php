@@ -12,7 +12,7 @@ class GetCoursesCreatedByTeacherAction
     {
         $teacher = Teacher::with('courses')->find($user->getKey());
 
-        if (!$teacher) {
+        if (! $teacher) {
             return [
                 'status' => JsonResponse::HTTP_NOT_FOUND,
                 'message' => 'Teacher not found',

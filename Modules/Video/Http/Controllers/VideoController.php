@@ -34,7 +34,7 @@ class VideoController extends Controller
         $uploadedVideoPath = $request->file('videoUrl')->storePublicly('course_videos/videos', 's3');
 
         $data = [
-            'visible'=>  $request->visible,
+            'visible' => $request->visible,
             'title' => $request->title,
             'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
             'section_id' => $request->section_id,
@@ -45,7 +45,7 @@ class VideoController extends Controller
         $videoInsert = DB::table('videos')->insertGetId($data);
 
         if ($videoInsert) {
-            return ApiResponse::sendResponse(201, 'Your Video uploaded successfully', ['Video_id'=>$videoInsert]);
+            return ApiResponse::sendResponse(201, 'Your Video uploaded successfully', ['Video_id' => $videoInsert]);
         }
 
         return ApiResponse::sendResponse(200, 'Failed to upload the Video', []);
@@ -58,7 +58,7 @@ class VideoController extends Controller
 
     public function update(VideoRequest $request, $videoId)
     {
-        $section =Section::find($request->section_id);
+        $section = Section::find($request->section_id);
         if (! $section) {
             return ApiResponse::sendResponse(404, 'section not found', []);
         }
@@ -90,9 +90,9 @@ class VideoController extends Controller
         ];
 
         $video = Video::where('id', $videoId)->update($data);
-      if ($video){
-          return ApiResponse::sendResponse(200, 'Video updated successfully', ['Video_id'=>$videoId]);
-      }
+        if ($video) {
+            return ApiResponse::sendResponse(200, 'Video updated successfully', ['Video_id' => $videoId]);
+        }
 
         return ApiResponse::sendResponse(200, 'Failed to updated the Video', []);
     }
@@ -101,7 +101,7 @@ class VideoController extends Controller
     {
         $video = Video::find($videoId);
 
-        if (!$video) {
+        if (! $video) {
             return ApiResponse::sendResponse(404, 'Video not found', []);
         }
 
@@ -126,6 +126,4 @@ class VideoController extends Controller
 
         return ApiResponse::sendResponse(200, 'Failed to delete the Video', []);
     }
-
-
 }

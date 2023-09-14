@@ -33,7 +33,7 @@ class ResetPasswordController extends Controller
             OTP::generate($teacher);
             $verificationToken = JWTAuth::fromUser($teacher);
             $response = [
-                'token'=>$verificationToken
+                'token' => $verificationToken,
             ];
             Mail::to($teacher->email)->send(new EmailVerification($teacher->otp, $teacher->name));
 

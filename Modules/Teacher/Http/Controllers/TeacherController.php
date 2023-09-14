@@ -23,20 +23,20 @@ class TeacherController extends Controller
     {
 
         $teacher = Teacher::find(Auth::guard('teacher')->user()->getKey());
-        if (!$teacher) {
+        if (! $teacher) {
             return ApiResponse::sendResponse(404, 'Teacher not found', []);
         }
+
         return ApiResponse::sendResponse(200, 'Teacher profile  retrieved successfully', new ProfileTeacherResource($teacher));
 
     }
-
 
     public function update(UpdateTeacherRequest $request)
     {
         $teacher = Auth::guard('teacher')->user();
 
         if ($request->has(['password', 'old_password'])) {
-            if (!Hash::check($request->old_password, $teacher->password)) {
+            if (! Hash::check($request->old_password, $teacher->password)) {
                 return ApiResponse::sendResponse(401, 'The old password does not match.', []);
             }
         }
@@ -44,7 +44,7 @@ class TeacherController extends Controller
         if ($request->file('profile')) {
             $profilePath = $request->file('profile')->storePublicly('profile_photos/photo', 's3');
             $existingPhotoPath = basename(parse_url($teacher->profile, PHP_URL_PATH));
-            if ( Storage::disk('s3')->exists("profile_photos/photo/{$existingPhotoPath}")) {
+            if (Storage::disk('s3')->exists("profile_photos/photo/{$existingPhotoPath}")) {
                 Storage::disk('s3')->delete("profile_photos/photo/{$existingPhotoPath}");
             }
         }
@@ -61,13 +61,12 @@ class TeacherController extends Controller
         return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource($teacher));
     }
 
-
     public function getSectionCreatedByTeacher($courseId)
     {
 
         $course = Course::with('sections')->find($courseId);
 
-        if (!$course) {
+        if (! $course) {
             return ApiResponse::sendResponse(404, 'Course not found', []);
         }
 
@@ -75,28 +74,29 @@ class TeacherController extends Controller
             return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Courses retrieved successfully',  SectionResource::collection($course->sections));
+        return ApiResponse::sendResponse(200, 'Courses retrieved successfully', SectionResource::collection($course->sections));
     }
+
     public function getVideoCreatedByTeacher($sectionId)
     {
         $section = Section::with('Videos')->find($sectionId);
 
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(404, 'Section not found', []);
         }
-
 
         if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
             return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Videos retrieved successfully',  VideosFilesResource::collection($section->Videos));
+        return ApiResponse::sendResponse(200, 'Videos retrieved successfully', VideosFilesResource::collection($section->Videos));
     }
+
     public function getFilesCreatedByTeacher($sectionId)
     {
         $section = Section::with('files')->find($sectionId);
 
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(404, 'Section not found', []);
         }
 
@@ -106,18 +106,15 @@ class TeacherController extends Controller
             return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
         }
 
-
-
-        return ApiResponse::sendResponse(200, 'files retrieved successfully',   FileResource::collection($section->files));
+        return ApiResponse::sendResponse(200, 'files retrieved successfully', FileResource::collection($section->files));
     }
-
 
     public function destroy()
     {
-        $teacher =Auth::guard('teacher')->user()->getKey();
+        $teacher = Auth::guard('teacher')->user()->getKey();
         $user = Teacher::find($teacher);
 
-        if (!$user) {
+        if (! $user) {
             return ApiResponse::sendResponse(200, 'User not found', []);
         }
 

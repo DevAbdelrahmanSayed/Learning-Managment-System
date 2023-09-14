@@ -35,6 +35,12 @@ class Course extends Model
     public function sections()
     {
         return $this->hasMany(Section::class, 'course_id');
+    }
 
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['teacher_id'] ?? false, function ($query) use ($filters) {
+            $query->where('teacher_id', $filters['teacher_id']);
+        });
     }
 }

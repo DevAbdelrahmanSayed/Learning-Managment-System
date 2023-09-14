@@ -3,14 +3,13 @@
 namespace Modules\Course\Actions;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\Course\Entities\Course;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class DestroyCourseAction
 {
-    public function execute($user,$courseId)
+    public function execute($user, $courseId)
     {
 
         $course = Course::find($courseId);
@@ -37,6 +36,7 @@ class DestroyCourseAction
             }
         }
         $course->delete();
+
         return [
             'status' => JsonResponse::HTTP_OK,
             'message' => 'course deleted successfully.',
@@ -44,5 +44,4 @@ class DestroyCourseAction
         ];
 
     }
-
 }
