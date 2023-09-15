@@ -5,7 +5,7 @@ namespace Modules\Course\Http\Controllers;
 use App\Helpers\ApiResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Modules\Course\Actions\DestroyCourseAction;
+use Modules\Course\Actions\DeleteCourseAction;
 use Modules\Course\Actions\GetCoursesWithPaginationAction;
 use Modules\Course\Actions\StoreCourseAction;
 use Modules\Course\Actions\UpdateCourseAction;
@@ -48,14 +48,17 @@ class CourseController extends Controller
 
         $course = $updateCourseAction->execute($course, $request->validated());
 
-        return ApiResponse::sendResponse($course['status'], $course['message'], $course['data']);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course Updated successfully.', new CourseResource($course));
     }
 
-    public function destroy($courseId, DestroyCourseAction $destroyCourseAction)
+    public function destroy(Course $course, DeleteCourseAction $deleteCourseAction)
     {
+        if ($course->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'You do not have permission to take this action');
+        }
 
-        $action = $destroyCourseAction->execute(Auth::guard('teacher')->user(), $courseId);
+        $deleteCourseAction->execute($course);
 
-        return ApiResponse::sendResponse($action['status'], $action['message'], $action['data']);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course deleted successfully.');
     }
 }
