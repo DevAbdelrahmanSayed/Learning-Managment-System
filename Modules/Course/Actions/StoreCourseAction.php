@@ -2,11 +2,10 @@
 
 namespace Modules\Course\Actions;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\Course\Entities\Course;
 use Modules\Teacher\Entities\Teacher;
-use Modules\Course\Actions\StoreCoursePhotoAction;
 
 class StoreCourseAction
 {
