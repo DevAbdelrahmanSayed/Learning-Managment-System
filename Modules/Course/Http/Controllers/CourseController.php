@@ -5,21 +5,23 @@ namespace Modules\Course\Http\Controllers;
 use App\Helpers\ApiResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Course\Actions\DestroyCourseAction;
+use Modules\Course\Actions\GetCoursesWithPaginationAction;
 use Modules\Course\Actions\StoreCourseAction;
 use Modules\Course\Actions\UpdateCourseAction;
-use Modules\Course\Actions\DestroyCourseAction;
 use Modules\Course\Http\Requests\CourseRequest;
+use Modules\Course\Http\Requests\IndexCourseRequest;
+use Modules\Section\Transformers\CourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Modules\Course\Actions\GetCoursesWithPaginationAction;
 
 class CourseController extends Controller
 {
-    public function index(GetCoursesWithPaginationAction $getCoursesWithPaginationAction)
+    public function index(IndexCourseRequest $request, GetCoursesWithPaginationAction $getCoursesWithPaginationAction)
     {
-        request()->validate(['teacher_id' => 'numeric|exists:teachers,id']);
         $courses = $getCoursesWithPaginationAction->execute(request(['teacher_id']));
+        $data = array_merge(CourseResource::collection($courses)->toArray(request()), $courses->pagination ?? []);
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK , 'done' , $courses);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Courses retrived successfully.', $data);
     }
 
     public function store(CourseRequest $request, StoreCourseAction $StoreCourseAction)
