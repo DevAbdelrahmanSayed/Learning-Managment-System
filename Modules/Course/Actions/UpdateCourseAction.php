@@ -2,32 +2,15 @@
 
 namespace Modules\Course\Actions;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Modules\Course\Entities\Course;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UpdateCourseAction
 {
-    public function execute($teacher, $courseId, $requestData)
+    public function execute(Course $course, $newCourseData)
     {
-        $course = Course::find($courseId);
-        if (! $course) {
-            return [
-                'status' => JsonResponse::HTTP_NOT_FOUND,
-                'message' => 'Course not found.',
-                'data' => [],
-            ];
-        }
-        if ($course->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
-            return [
-                'status' => JsonResponse::HTTP_FORBIDDEN,
-                'message' => 'You are not allowed to take this action.',
-                'data' => [],
-            ];
-
-        }
-        $photoPath = $requestData->file('photo')->storePublicly('course_photos/photo', 's3');
+        $photoPath = $newCourseData->file('photo')->storePublicly('course_photos/photo', 's3');
 
         if ($course->photo) {
             $existingPhotoPath = basename(parse_url($course->photo, PHP_URL_PATH));
@@ -36,11 +19,11 @@ class UpdateCourseAction
             }
         }
         $data = [
-            'title' => $requestData->title,
-            'description' => $requestData->description,
+            'title' => $newCourseData->title,
+            'description' => $newCourseData->description,
             'photo' => "https://online-bucket.s3.amazonaws.com/$photoPath",
-            'price' => $requestData->price,
-            'category_id' => $requestData->category_id,
+            'price' => $newCourseData->price,
+            'category_id' => $newCourseData->category_id,
             'updated_at' => now(),
         ];
         $course->update($data);

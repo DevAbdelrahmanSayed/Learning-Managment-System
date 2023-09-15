@@ -4,16 +4,17 @@ namespace Modules\Course\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use Illuminate\Routing\Controller;
+use Modules\Course\Entities\Course;
 use Illuminate\Support\Facades\Auth;
-use Modules\Course\Actions\DestroyCourseAction;
-use Modules\Course\Actions\GetCoursesWithPaginationAction;
 use Modules\Course\Actions\StoreCourseAction;
 use Modules\Course\Actions\UpdateCourseAction;
-use Modules\Course\Http\Requests\CourseRequest;
-use Modules\Course\Http\Requests\IndexCourseRequest;
-use Modules\Course\Http\Requests\StoreCourseRequest;
+use Modules\Course\Actions\DestroyCourseAction;
 use Modules\Section\Transformers\CourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Modules\Course\Http\Requests\IndexCourseRequest;
+use Modules\Course\Http\Requests\StoreCourseRequest;
+use Modules\Course\Http\Requests\UpdatecourseRequest;
+use Modules\Course\Actions\GetCoursesWithPaginationAction;
 
 class CourseController extends Controller
 {
@@ -27,7 +28,7 @@ class CourseController extends Controller
 
     public function store(StoreCourseRequest $request, StoreCourseAction $StoreCourseAction)
     {
-        $course = $StoreCourseAction->execute(collect($request->validated()), Auth::guard('teacher')->user());
+        $course = $StoreCourseAction->execute($request->validated(), Auth::guard('teacher')->user());
 
         return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ', new CourseResource($course));
     }
@@ -36,11 +37,14 @@ class CourseController extends Controller
     {
     }
 
-    public function update(CourseRequest $request, $courseId, UpdateCourseAction $updateCourseAction)
+    public function update(Course $course, UpdatecourseRequest $request, UpdateCourseAction $updateCourseAction)
     {
-        $action = $updateCourseAction->execute(Auth::guard('teacher')->user(), $courseId, $request);
+        if ($course->teacher_id !== Auth::guard('teacher')->user()->getKey())
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN , 'You do not have permission to take this action');
 
-        return ApiResponse::sendResponse($action['status'], $action['message'], $action['data']);
+        $course = $updateCourseAction->execute($course, $request->validated());
+
+        return ApiResponse::sendResponse($course['status'], $course['message'], $course['data']);
     }
 
     public function destroy($courseId, DestroyCourseAction $destroyCourseAction)
