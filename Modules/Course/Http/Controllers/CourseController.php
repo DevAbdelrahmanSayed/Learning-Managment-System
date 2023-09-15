@@ -11,6 +11,7 @@ use Modules\Course\Actions\StoreCourseAction;
 use Modules\Course\Actions\UpdateCourseAction;
 use Modules\Course\Http\Requests\CourseRequest;
 use Modules\Course\Http\Requests\IndexCourseRequest;
+use Modules\Course\Http\Requests\StoreCourseRequest;
 use Modules\Section\Transformers\CourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -24,13 +25,11 @@ class CourseController extends Controller
         return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Courses retrived successfully.', $data);
     }
 
-    public function store(CourseRequest $request, StoreCourseAction $StoreCourseAction)
+    public function store(StoreCourseRequest $request, StoreCourseAction $StoreCourseAction)
     {
-        $action = $StoreCourseAction->execute($request, Auth::guard('teacher')->user());
+        $course = $StoreCourseAction->execute(collect($request->validated()), Auth::guard('teacher')->user());
 
-        return ($action['status'] === 'success')
-            ? ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, $action['message'], $action['data'])
-            : ApiResponse::sendResponse(JsonResponse::HTTP_OK, $action['message']);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ', new CourseResource($course));
     }
 
     public function show($teacherId)

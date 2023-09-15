@@ -34,7 +34,7 @@ class GetCoursesWithPaginationAction
                     ],
                 ];
             }
-            
+
             return $data;
         }
     }

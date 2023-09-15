@@ -14,7 +14,7 @@ class TeacherSeeder extends Seeder
     {
         $data = [];
 
-        for($i = 0 ; $i < 10 ; $i++){
+        for ($i = 0; $i < 10; $i++) {
             $data[] = [
                 'name' => fake()->name(),
                 'email' => fake()->unique()->email(),

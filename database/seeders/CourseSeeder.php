@@ -25,7 +25,7 @@ class CourseSeeder extends Seeder
                 'title' => fake()->paragraph(1),
                 'description' => fake()->paragraph(),
                 'photo' => 'photo',
-                'price' => rand(1000 , 9999),
+                'price' => rand(1000, 9999),
                 'slug' => 'slug',
             ];
         }
