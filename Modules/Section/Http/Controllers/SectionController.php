@@ -6,12 +6,13 @@ use App\Helpers\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Modules\Course\Entities\Course;
 use Modules\Section\Actions\CreateSectionAction;
+use Modules\Section\Actions\DeleteSectionAction;
+use Modules\Section\Actions\UpdateSectionAction;
 use Modules\Section\Entities\Section;
-use Modules\Section\Http\Requests\SectionUpdateRequest;
 use Modules\Section\Http\Requests\StoreSectionRequest;
+use Modules\Section\Http\Requests\UpdateSectionRequest;
 use Modules\Teacher\Transformers\SectionResource;
 
 class SectionController extends Controller
@@ -24,7 +25,7 @@ class SectionController extends Controller
     public function store(Course $course, StoreSectionRequest $request, CreateSectionAction $createSectionAction)
     {
         if ($course->teacher_id !== auth()->user()->id) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not allowed to take this action', null);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
 
         $section = $createSectionAction->execute($course, $request->validated());
@@ -32,43 +33,26 @@ class SectionController extends Controller
         return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Section created successfully.', new SectionResource($section));
     }
 
-    public function update(SectionUpdateRequest $request, $sectionId)
+    public function update(Course $course, Section $section, UpdateSectionRequest $request, UpdateSectionAction $updateSectionAction)
     {
 
-        $section = Section::find($sectionId);
-
-        if (! $section) {
-            return ApiResponse::sendResponse(200, 'Section not found', []);
-        }
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-        if ($section->teacher_id !== $authenticatedTeacher) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this section', []);
-        }
-        $data = [
-            'title' => $request->title,
-            'updated_at' => now(),
-        ];
-        $sectionUpdate = DB::table('sections')->where('id', $sectionId)->update($data);
-        if ($sectionUpdate) {
-            return ApiResponse::sendResponse(200, 'Section updated successfully', ['Section_id' => $sectionId]);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not have permission to update this section', []);
         }
 
-        return ApiResponse::sendResponse(200, 'Failed to update the section', []);
+        $section = $updateSectionAction->execute($section, $request->validated());
+
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section updated successfully.', new SectionResource($section));
     }
 
-    public function destroy($sectionId)
+    public function destroy(Course $course, Section $section, DeleteSectionAction $deleteSectionAction)
     {
-        $section = Section::find($sectionId);
-
-        if (! $section) {
-            return ApiResponse::sendResponse(200, 'Section not found', []);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not have permission to delete this section');
         }
-        $authenticatedTeacher = Auth::guard('teacher')->user()->id;
-        if ($section->teacher_id !== $authenticatedTeacher) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this section', []);
-        }
-        $section->delete();
 
-        return ApiResponse::sendResponse(200, 'Section deleted successfully', []);
+        $deleteSectionAction->execute($section);
+
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section deleted successfully');
     }
 }

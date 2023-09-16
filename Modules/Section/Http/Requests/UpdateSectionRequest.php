@@ -6,7 +6,7 @@ use App\Helpers\ApiValidationHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SectionUpdateRequest extends FormRequest
+class UpdateSectionRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,8 +16,8 @@ class SectionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string|max:20',
-
+            'title' => 'string|max:20',
+            'description' => 'string|min:3|max:255',
         ];
     }
 
