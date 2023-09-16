@@ -16,6 +16,7 @@ class Section extends Model
         'title',
         'description',
         'course_id',
+        'teacher_id',
     ];
 
     protected static function newFactory()

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('teacher_id')->references('id')->on('teachers')->cascadeOnDelete();
+            $table->string('description');
             $table->string('title');
             $table->timestamps();
             // $table->foreignId('course_id')->references('id')->on('courses')->cascadeOnDelete();

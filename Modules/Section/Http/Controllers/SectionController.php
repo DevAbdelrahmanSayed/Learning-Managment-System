@@ -3,53 +3,33 @@
 namespace Modules\Section\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Course\Entities\Course;
+use Modules\Section\Actions\CreateSectionAction;
 use Modules\Section\Entities\Section;
-use Modules\Section\Http\Requests\SectionRequest;
 use Modules\Section\Http\Requests\SectionUpdateRequest;
-use Modules\Section\Transformers\CourseResource;
+use Modules\Section\Http\Requests\StoreSectionRequest;
+use Modules\Teacher\Transformers\SectionResource;
 
 class SectionController extends Controller
 {
-    public function store(SectionRequest $request)
+    public function index(Course $course)
     {
-        $course = Course::find($request->course_id);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section retrieved successfully.', SectionResource::collection($course->sections));
+    }
 
+    public function store(Course $course, StoreSectionRequest $request, CreateSectionAction $createSectionAction)
+    {
         if ($course->teacher_id !== auth()->user()->id) {
             return ApiResponse::sendResponse(403, 'Unauthorized: You do not allowed to take this action', null);
         }
 
-        $insertedSection = DB::table('sections')->insertGetId([
-            'title' => $request->title,
-            'course_id' => $request->course_id,
-            'teacher_id' => auth()->user()->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        if ($insertedSection) {
-            return ApiResponse::sendResponse(201, 'Section created successfully', ['Section_id' => $insertedSection]);
-        }
+        $section = $createSectionAction->execute($course, $request->validated());
 
-        return ApiResponse::sendResponse(200, 'Failed to create the section', []);
-
-    }
-
-    public function show($courseId)
-    {
-        $course = Course::where('id', $courseId)->with('sections.Videos', 'sections.files', 'teachers')->first();
-
-        if (! $course) {
-            return ApiResponse::sendResponse(200, 'Course not found', null);
-        }
-
-        if ($course->teacher_id !== auth()->user()->id) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this course', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Data retrieved successfully. ', new CourseResource($course));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Section created successfully.', new SectionResource($section));
     }
 
     public function update(SectionUpdateRequest $request, $sectionId)

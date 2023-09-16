@@ -18,8 +18,8 @@ class SectionResource extends JsonResource
         return [
             'sectionId' => $this->id,
             'sectionTitle' => $this->title,
-            'sectionCreatedAt' => $this->created_at,
-            'sectionUpdatedAt' => $this->updated_at,
+            'sectionCreatedAt' => date_format($this->created_at, 'Y-m-d'),
+            'sectionUpdatedAt' => date_format($this->updated_at, 'Y-m-d'),
         ];
     }
 }

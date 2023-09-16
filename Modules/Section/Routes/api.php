@@ -14,4 +14,4 @@ use Modules\Section\Http\Controllers\SectionController;
 |
 */
 
-Route::apiResource('sections', SectionController::class)->middleware(['auth:teacher', 'Verify:teacher']);
+Route::apiResource('courses/{course}/sections', SectionController::class)->middleware(['auth:teacher', 'Verify:teacher']);
