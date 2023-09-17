@@ -3,32 +3,31 @@
 namespace Modules\Teacher\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Modules\Auth\Transformers\TeacherResource;
 use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
+use Modules\Teacher\Actions\GetAllTeachersAction;
 use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
 use Modules\Teacher\Transformers\FileResource;
-use Modules\Teacher\Transformers\ProfileTeacherResource;
 use Modules\Teacher\Transformers\SectionResource;
+use Modules\Teacher\Transformers\TeacherResource;
 use Modules\Teacher\Transformers\VideosFilesResource;
 
 class TeacherController extends Controller
 {
-    public function index()
+    public function index(GetAllTeachersAction $getAllTeachersAction)
     {
-
-        $teacher = Teacher::find(Auth::guard('teacher')->user()->getKey());
-        if (! $teacher) {
-            return ApiResponse::sendResponse(404, 'Teacher not found', []);
+        $teachers = $getAllTeachersAction->execute();
+        if (! $teachers) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'No teachers found');
         }
 
-        return ApiResponse::sendResponse(200, 'Teacher profile  retrieved successfully', new ProfileTeacherResource($teacher));
-
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Teachers retrieved successfully.', TeacherResource::collection($teachers));
     }
 
     public function update(UpdateTeacherRequest $request)
