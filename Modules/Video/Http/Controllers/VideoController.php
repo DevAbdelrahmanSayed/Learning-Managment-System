@@ -22,13 +22,14 @@ class VideoController extends Controller
 
     public function store(Section $section, VideoRequest $request, StoreVideoAction $storeVideoAction)
     {
-        if (!$section) {
+        if (! $section) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'section not found', null);
         }
         if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
         $video = $storeVideoAction->execute($section, $request->validated());
+
         return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Video created successfully.', ['Video_id' => $video->id]);
     }
 
@@ -39,7 +40,7 @@ class VideoController extends Controller
 
     public function update(Section $section, Video $video, VideoRequest $request, UpdateVideoAction $updateVideoAction)
     {
-        if (!$section && !$video) {
+        if (! $section && ! $video) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'not found', null);
         }
         if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
@@ -53,14 +54,15 @@ class VideoController extends Controller
 
     public function destroy(Section $section, Video $video, DeleteVideoAction $deleteVideoAction)
     {
-        if (!$video) {
+        if (! $video) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'Video not found', null);
         }
 
         if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
-         $deleteVideoAction->execute($video);
-            return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Video deleted successfully',null);
+        $deleteVideoAction->execute($video);
+
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Video deleted successfully', null);
     }
 }

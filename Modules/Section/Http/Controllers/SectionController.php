@@ -53,6 +53,6 @@ class SectionController extends Controller
 
         $deleteSectionAction->execute($section);
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section deleted successfully',null);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section deleted successfully', null);
     }
 }

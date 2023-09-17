@@ -14,7 +14,7 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 |
 */
 
-Route::resource('teachers', TeacherController::class);//->middleware(['auth:teacher']);
+Route::resource('teachers', TeacherController::class); //->middleware(['auth:teacher']);
 
 Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
     Route::put('/', [TeacherController::class, 'index']);

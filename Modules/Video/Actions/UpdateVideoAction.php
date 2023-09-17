@@ -25,7 +25,5 @@ class UpdateVideoAction
 
         return $video->update($videoData);
 
-
     }
-
 }

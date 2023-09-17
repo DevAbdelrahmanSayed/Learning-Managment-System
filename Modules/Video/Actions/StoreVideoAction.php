@@ -13,6 +13,7 @@ class StoreVideoAction
         $videoData['videoUrl'] = "https://online-bucket.s3.amazonaws.com/$videoPath";
         $videoData['section_id'] = $section->id;
         $videoData['teacher_id'] = $section->teacher_id;
+
         return Video::create($videoData);
 
     }
