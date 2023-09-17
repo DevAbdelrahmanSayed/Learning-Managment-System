@@ -3,11 +3,13 @@
 namespace Modules\Video\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Modules\Section\Entities\Section;
+use Modules\Video\Actions\DeleteVideoAction;
+use Modules\Video\Actions\StoreVideoAction;
+use Modules\Video\Actions\UpdateVideoAction;
 use Modules\Video\Entities\Video;
 use Modules\Video\Http\Requests\VideoRequest;
 
@@ -18,37 +20,16 @@ class VideoController extends Controller
         //
     }
 
-    public function store(VideoRequest $request)
+    public function store(Section $section, VideoRequest $request, StoreVideoAction $storeVideoAction)
     {
-        $section = DB::table('sections')->find($request->section_id);
-        if (! $section) {
-            return ApiResponse::sendResponse(404, 'section not found', []);
+        if (!$section) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'section not found', null);
         }
-        $authenticatedTeacher = Auth::guard('teacher')->user()->getKey();
-
-        if ($section->teacher_id !== $authenticatedTeacher) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to access this video', []);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
-
-        // Upload Video to S3
-        $uploadedVideoPath = $request->file('videoUrl')->storePublicly('course_videos/videos', 's3');
-
-        $data = [
-            'visible' => $request->visible,
-            'title' => $request->title,
-            'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
-            'section_id' => $request->section_id,
-            'teacher_id' => $authenticatedTeacher,
-            'created_at' => now(),
-        ];
-
-        $videoInsert = DB::table('videos')->insertGetId($data);
-
-        if ($videoInsert) {
-            return ApiResponse::sendResponse(201, 'Your Video uploaded successfully', ['Video_id' => $videoInsert]);
-        }
-
-        return ApiResponse::sendResponse(200, 'Failed to upload the Video', []);
+        $video = $storeVideoAction->execute($section, $request->validated());
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Video created successfully.', ['Video_id' => $video->id]);
     }
 
     public function show($id)
@@ -56,74 +37,30 @@ class VideoController extends Controller
         //
     }
 
-    public function update(VideoRequest $request, $videoId)
+    public function update(Section $section, Video $video, VideoRequest $request, UpdateVideoAction $updateVideoAction)
     {
-        $section = Section::find($request->section_id);
-        if (! $section) {
-            return ApiResponse::sendResponse(404, 'section not found', []);
+        if (!$section && !$video) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'not found', null);
         }
-        $video = Video::find($videoId);
-        if (! $video) {
-            return ApiResponse::sendResponse(404, 'Video not found', []);
+        if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
+        $video = $updateVideoAction->execute($section, $video, $request->validated());
 
-        $authenticatedTeacherId = Auth::guard('teacher')->user()->getKey();
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Video updated successfully', ['Video_id' => $video->id]);
 
-        if ($video->teacher_id !== $authenticatedTeacherId) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to update this video', []);
-        }
-
-        if ($video->videoUrl) {
-            $existingVideoPath = basename(parse_url($video->videoUrl, PHP_URL_PATH));
-            if (Storage::disk('s3')->exists("course_videos/videos/{$existingVideoPath}")) {
-                Storage::disk('s3')->delete("course_videos/videos/{$existingVideoPath}");
-            }
-        }
-
-        $uploadedVideoPath = $request->file('videoUrl')->storePublicly('course_videos/videos', 's3');
-
-        $data = [
-            'title' => $request->title,
-            'section_id' => $request->section_id,
-            'videoUrl' => "https://online-bucket.s3.amazonaws.com/$uploadedVideoPath",
-            'updated_at' => now(),
-        ];
-
-        $video = Video::where('id', $videoId)->update($data);
-        if ($video) {
-            return ApiResponse::sendResponse(200, 'Video updated successfully', ['Video_id' => $videoId]);
-        }
-
-        return ApiResponse::sendResponse(200, 'Failed to updated the Video', []);
     }
 
-    public function destroy($videoId)
+    public function destroy(Section $section, Video $video, DeleteVideoAction $deleteVideoAction)
     {
-        $video = Video::find($videoId);
-
-        if (! $video) {
-            return ApiResponse::sendResponse(404, 'Video not found', []);
+        if (!$video) {
+            return ApiResponse::sendResponse(404, 'Video not found', null);
         }
 
-        $authenticatedTeacherId = Auth::guard('teacher')->user()->getKey();
-
-        if ($video->teacher_id !== $authenticatedTeacherId) {
-            return ApiResponse::sendResponse(403, 'Unauthorized: You do not have permission to delete this video', []);
+        if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
-
-        if ($video->videoUrl) {
-            $existingVideoPath = basename(parse_url($video->videoUrl, PHP_URL_PATH));
-            $s3Disk = Storage::disk('s3');
-
-            if ($s3Disk->exists("course_videos/videos/{$existingVideoPath}")) {
-                $s3Disk->delete("course_videos/videos/{$existingVideoPath}");
-            }
-        }
-
-        if ($video->delete()) {
-            return ApiResponse::sendResponse(200, 'Video deleted successfully', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Failed to delete the Video', []);
+         $deleteVideoAction->execute($video);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Video deleted successfully',null);
     }
 }
