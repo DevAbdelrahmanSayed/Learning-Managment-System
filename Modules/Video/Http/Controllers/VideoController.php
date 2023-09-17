@@ -54,7 +54,7 @@ class VideoController extends Controller
     public function destroy(Section $section, Video $video, DeleteVideoAction $deleteVideoAction)
     {
         if (!$video) {
-            return ApiResponse::sendResponse(404, 'Video not found', null);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'Video not found', null);
         }
 
         if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
