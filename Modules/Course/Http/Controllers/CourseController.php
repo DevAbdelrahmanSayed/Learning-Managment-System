@@ -13,7 +13,8 @@ use Modules\Course\Entities\Course;
 use Modules\Course\Http\Requests\IndexCourseRequest;
 use Modules\Course\Http\Requests\StoreCourseRequest;
 use Modules\Course\Http\Requests\UpdatecourseRequest;
-use Modules\Section\Transformers\CourseResource;
+use Modules\Course\Transformers\AllCourseResource;
+use Modules\Course\Transformers\CourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CourseController extends Controller
@@ -24,7 +25,7 @@ class CourseController extends Controller
         if (! $courses) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'No courses found');
         }
-        $data = array_merge(CourseResource::collection($courses)->toArray(request()), $courses->pagination ?? []);
+        $data = array_merge(AllCourseResource::collection($courses)->toArray(request()), $courses->pagination ?? []);
 
         return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Courses retrived successfully.', $data);
     }
@@ -33,7 +34,7 @@ class CourseController extends Controller
     {
         $course = $StoreCourseAction->execute($request->validated(), Auth::guard('teacher')->user());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ', new CourseResource($course));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ', new AllCourseResource($course));
     }
 
     public function show($teacherId)

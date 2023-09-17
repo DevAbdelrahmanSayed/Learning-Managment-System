@@ -24,7 +24,7 @@ class SectionController extends Controller
 
     public function store(Course $course, StoreSectionRequest $request, CreateSectionAction $createSectionAction)
     {
-        if ($course->teacher_id !== auth()->user()->id) {
+        if ($course->teacher_id !== Auth::guard('teacher')->user()->id) {
             return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
         }
 
@@ -53,6 +53,6 @@ class SectionController extends Controller
 
         $deleteSectionAction->execute($section);
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section deleted successfully');
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section deleted successfully',null);
     }
 }

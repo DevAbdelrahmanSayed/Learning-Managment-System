@@ -1,10 +1,11 @@
 <?php
 
-namespace Modules\Section\Transformers;
+namespace Modules\Course\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Section\Transformers\SectionResource;
 
-class CourseResource extends JsonResource
+class AllCourseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
