@@ -17,6 +17,7 @@ class Video extends Model
         'videoUrl',
         'section_id',
         'course_id',
+        'teacher_id'
     ];
 
     protected static function newFactory()

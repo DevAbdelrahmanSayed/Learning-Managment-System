@@ -34,7 +34,7 @@ class CourseController extends Controller
     {
         $course = $StoreCourseAction->execute($request->validated(), Auth::guard('teacher')->user());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ', new AllCourseResource($course));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Course created successfully. ',['courseID'=>$course->id]);
     }
 
     public function show($teacherId)
@@ -49,7 +49,7 @@ class CourseController extends Controller
 
         $course = $updateCourseAction->execute($course, $request->validated());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course Updated successfully.', new CourseResource($course));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course Updated successfully.', ['courseID'=>$course->id]);
     }
 
     public function destroy(Course $course, DeleteCourseAction $deleteCourseAction)

@@ -60,53 +60,6 @@ class TeacherController extends Controller
         return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource($teacher));
     }
 
-    public function getSectionCreatedByTeacher($courseId)
-    {
-
-        $course = Course::with('sections')->find($courseId);
-
-        if (! $course) {
-            return ApiResponse::sendResponse(404, 'Course not found', []);
-        }
-
-        if ($course->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Courses retrieved successfully', SectionResource::collection($course->sections));
-    }
-
-    public function getVideoCreatedByTeacher($sectionId)
-    {
-        $section = Section::with('Videos')->find($sectionId);
-
-        if (! $section) {
-            return ApiResponse::sendResponse(404, 'Section not found', []);
-        }
-
-        if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'Videos retrieved successfully', VideosFilesResource::collection($section->Videos));
-    }
-
-    public function getFilesCreatedByTeacher($sectionId)
-    {
-        $section = Section::with('files')->find($sectionId);
-
-        if (! $section) {
-            return ApiResponse::sendResponse(404, 'Section not found', []);
-        }
-
-        $user = auth()->user();
-
-        if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
-            return ApiResponse::sendResponse(403, 'You do not allowed to take this action.', []);
-        }
-
-        return ApiResponse::sendResponse(200, 'files retrieved successfully', FileResource::collection($section->files));
-    }
 
     public function destroy()
     {

@@ -22,11 +22,8 @@ class VideoController extends Controller
 
     public function store(Section $section, VideoRequest $request, StoreVideoAction $storeVideoAction)
     {
-        if (! $section) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'section not found', null);
-        }
-        if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
+        if ($section->teacher_id !== Auth::guard('teacher')->user()->getKey()) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action');
         }
         $video = $storeVideoAction->execute($section, $request->validated());
 
@@ -40,29 +37,23 @@ class VideoController extends Controller
 
     public function update(Section $section, Video $video, VideoRequest $request, UpdateVideoAction $updateVideoAction)
     {
-        if (! $section && ! $video) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'not found', null);
-        }
+
         if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action');
         }
         $video = $updateVideoAction->execute($section, $video, $request->validated());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Video updated successfully', ['Video_id' => $video->id]);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Video updated successfully', ['videoId' => $video->id]);
 
     }
 
     public function destroy(Section $section, Video $video, DeleteVideoAction $deleteVideoAction)
     {
-        if (! $video) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'Video not found', null);
-        }
-
         if ($video->teacher_id !== Auth::guard('teacher')->user()->id) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action');
         }
         $deleteVideoAction->execute($video);
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Video deleted successfully', null);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Video deleted successfully');
     }
 }

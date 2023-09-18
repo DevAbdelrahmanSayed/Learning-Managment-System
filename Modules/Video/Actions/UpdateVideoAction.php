@@ -23,7 +23,7 @@ class UpdateVideoAction
         }
         $videoData['section_id'] = $section->id;
 
-        return $video->update($videoData);
-
+         $video->update($videoData);
+        return $video ;
     }
 }

@@ -25,24 +25,24 @@ class SectionController extends Controller
     public function store(Course $course, StoreSectionRequest $request, CreateSectionAction $createSectionAction)
     {
         if ($course->teacher_id !== Auth::guard('teacher')->user()->id) {
-            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action', null);
+            return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not allowed to take this action');
         }
 
         $section = $createSectionAction->execute($course, $request->validated());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Section created successfully.', new SectionResource($section));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Section created successfully.', ['sectionId'=>$section->id]);
     }
 
     public function update(Course $course, Section $section, UpdateSectionRequest $request, UpdateSectionAction $updateSectionAction)
     {
-
-        if ($section->teacher_id !== Auth::guard('teacher')->user()->id) {
+        $teacherAuth = Auth::guard('teacher')->user()->id;
+        if ($section->teacher_id !==$teacherAuth)  {
             return ApiResponse::sendResponse(JsonResponse::HTTP_FORBIDDEN, 'Unauthorized: You do not have permission to update this section', []);
         }
 
         $section = $updateSectionAction->execute($section, $request->validated());
 
-        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section updated successfully.', new SectionResource($section));
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Section updated successfully.', ['sectionId'=>$section->id]);
     }
 
     public function destroy(Course $course, Section $section, DeleteSectionAction $deleteSectionAction)

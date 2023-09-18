@@ -14,4 +14,4 @@ use Modules\File\Http\Controllers\FileController;
 |
 */
 
-Route::apiResource('files', FileController::class)->middleware(['auth:teacher', 'Verify:teacher']);
+Route::apiResource('courses/{section}/files', FileController::class)->middleware(['auth:teacher', 'Verify:teacher']);
