@@ -14,14 +14,11 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 |
 */
 
-Route::resource('teachers', TeacherController::class); //->middleware(['auth:teacher']);
+Route::Apiresource('teachers', TeacherController::class)->middleware(['auth:teacher']);
 
-Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
-    Route::put('/', [TeacherController::class, 'index']);
-    Route::get('/profile', [TeacherController::class, 'update']);
-    Route::delete('/destroy', [TeacherController::class, 'destroy']);
-
-    Route::get('/{courseId}/sections', [TeacherController::class, 'getSectionCreatedByTeacher']);
-    Route::get('/{sectionId}/videos', [TeacherController::class, 'getVideoCreatedByTeacher']);
-    Route::get('/{sectionId}/files', [TeacherController::class, 'getFilesCreatedByTeacher']);
-});
+//Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
+//    Route::put('/', [TeacherController::class, 'index']);
+//    Route::get('/profile', [TeacherController::class, 'update']);
+//    Route::delete('/destroy', [TeacherController::class, 'destroy']);
+//
+//});

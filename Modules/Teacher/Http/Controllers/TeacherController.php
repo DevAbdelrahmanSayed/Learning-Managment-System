@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
+use Modules\Teacher\Actions\DeleteTeacherAction;
 use Modules\Teacher\Actions\GetAllTeachersAction;
+use Modules\Teacher\Actions\UpdateTeachersAction;
 use Modules\Teacher\Entities\Teacher;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
 use Modules\Teacher\Transformers\FileResource;
@@ -30,49 +32,24 @@ class TeacherController extends Controller
         return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Teachers retrieved successfully.', TeacherResource::collection($teachers));
     }
 
-    public function update(UpdateTeacherRequest $request)
+    public function update( Teacher $teacher ,UpdateTeacherRequest $request , UpdateTeachersAction $updateTeachersAction)
     {
-        $teacher = Auth::guard('teacher')->user();
 
         if ($request->has(['password', 'old_password'])) {
             if (! Hash::check($request->old_password, $teacher->password)) {
-                return ApiResponse::sendResponse(401, 'The old password does not match.', []);
+                return ApiResponse::sendResponse(401, 'The old password does not match.');
             }
         }
+        $updatedTeacher = $updateTeachersAction->execute($teacher,$request->validated());
 
-        if ($request->file('profile')) {
-            $profilePath = $request->file('profile')->storePublicly('profile_photos/photo', 's3');
-            $existingPhotoPath = basename(parse_url($teacher->profile, PHP_URL_PATH));
-            if (Storage::disk('s3')->exists("profile_photos/photo/{$existingPhotoPath}")) {
-                Storage::disk('s3')->delete("profile_photos/photo/{$existingPhotoPath}");
-            }
-        }
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'profile' => "https://online-bucket.s3.amazonaws.com/$profilePath",
-            'about' => $request->about,
-            'password' => Hash::make($request->password),
-            'updated_at' => now(),
-        ];
-        $teacher->update($data);
-
-        return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource($teacher));
+        return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource( $updatedTeacher));
     }
 
 
-    public function destroy()
+    public function destroy(Teacher $teacher , DeleteTeacherAction $deleteTeacherAction)
     {
-        $teacher = Auth::guard('teacher')->user()->getKey();
-        $user = Teacher::find($teacher);
 
-        if (! $user) {
-            return ApiResponse::sendResponse(200, 'User not found', []);
-        }
-
-        $user->delete();
-        Auth::guard('teacher')->logout();
-
+         $deleteTeacherAction->execute($teacher);
         return ApiResponse::sendResponse(200, 'User deleted successfully .', []);
 
     }
