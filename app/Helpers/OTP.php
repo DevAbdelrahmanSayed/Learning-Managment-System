@@ -9,24 +9,28 @@ class OTP
 {
     public static function generate($user)
     {
-        $user->otp = rand(1000, 9999);
-        $user->expire_at = now()->addMinutes(15);
-        $user->save();
+        $otp = $user->otp()->create([
+            'code' => rand(1000, 9999),
+            'expire_at' => now()->addMinutes(15),
+        ]);
 
-        Mail::to($user->email)->send(new EmailVerification($user->otp, $user->name));
+        Mail::to($user->email)->send(new EmailVerification($otp->code, $user->name));
     }
+
 
     public static function verify($user, $otp)
     {
-        if (now()->lt($user->expire_at) && $otp == $user->otp) {
-            $user->email_verified_at = now();
-            $user->otp = null;
-            $user->save();
+        $userOtp = $user->otp()->first();
 
+        if ($userOtp && now()->lt($userOtp->expire_at) && $otp == $userOtp->code) {
+            $user->email_verified_at = now();
+            $user->save(); // Save the user to update email_verified_at
+            $userOtp->update(['code' => null]);
             return true;
-        } else {
-            return false;
         }
 
+        return false;
     }
+
+
 }

@@ -13,7 +13,7 @@ return [
         base_path('Modules/File/Entities'),
         base_path('Modules/Section/Entities'),
         base_path('Modules/Teacher/Entities'),
-        base_path('Modules/User/Entities'),
+        base_path('Modules/Student/Entities'),
         base_path('Modules/Video/Entities'),
     ],
 
@@ -25,7 +25,7 @@ return [
      * and an array of relation names to ignore.
      */
     'ignore' => [
-        // User::class,
+        // Student::class,
         // Post::class => [
         //     'user'
         // ]
@@ -38,7 +38,7 @@ return [
      * Note: that if this array is filled, the 'ignore' array will not be used.
     */
     'whitelist' => [
-        // App\User::class,
+        // App\Student::class,
         // App\Post::class,
     ],
 

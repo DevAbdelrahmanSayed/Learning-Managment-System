@@ -42,7 +42,7 @@ class TeacherController extends Controller
         }
         $updatedTeacher = $updateTeachersAction->execute($teacher,$request->validated());
 
-        return ApiResponse::sendResponse(200, 'User\'s data updated successfully.', new TeacherResource( $updatedTeacher));
+        return ApiResponse::sendResponse(200, 'Student\'s data updated successfully.', new TeacherResource( $updatedTeacher));
     }
 
 
@@ -50,7 +50,7 @@ class TeacherController extends Controller
     {
 
          $deleteTeacherAction->execute($teacher);
-        return ApiResponse::sendResponse(200, 'User deleted successfully .', []);
+        return ApiResponse::sendResponse(200, 'Student deleted successfully .', []);
 
     }
 }

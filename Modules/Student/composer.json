@@ -1,5 +1,5 @@
 {
-    "name": "nwidart/user",
+    "name": "nwidart/student",
     "description": "",
     "authors": [
         {
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\User\\": ""
+            "Modules\\Student\\": ""
         }
     }
 }

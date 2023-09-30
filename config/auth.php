@@ -41,8 +41,7 @@ return [
         'student' => [
             'driver' => 'jwt',
             'provider' => 'students',
-            'ttl' => 7 * 24 * 60,
-            'expire' => 10080,
+
         ],
         'teacher' => [
             'driver' => 'jwt',
@@ -54,7 +53,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | Student Providers
     |--------------------------------------------------------------------------
     |
     | All authentication drivers have a user provider. This defines how the
@@ -72,7 +71,7 @@ return [
     'providers' => [
         'students' => [
             'driver' => 'eloquent',
-            'model' => Modules\User\Entities\User::class,
+            'model' => Modules\Student\Entities\Student::class,
         ],
         'teachers' => [
             'driver' => 'eloquent',

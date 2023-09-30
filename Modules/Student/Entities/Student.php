@@ -1,30 +1,32 @@
 <?php
 
-namespace Modules\User\Entities;
+namespace Modules\Student\Entities;
+
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Auth\Entities\Otp;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class Student extends Authenticatable implements JWTSubject
+
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-    ];
+        'about',
+        'profile',
 
+    ];
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidde                                                                                                                                                                          8n for serialization.
      *
      * @var array<int, string>
      */
@@ -60,5 +62,24 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Set the hashed password attribute.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
+    public function otp () :MorphMany
+    {
+        return $this->morphMany(Otp::class,'otpable');
+    }
+    protected static function newFactory()
+    {
+        return \Modules\Student\Database\factories\StudentFactory::new();
     }
 }

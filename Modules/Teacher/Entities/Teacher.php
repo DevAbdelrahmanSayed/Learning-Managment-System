@@ -3,10 +3,13 @@
 namespace Modules\Teacher\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Auth\Entities\Otp;
 use Modules\Course\Entities\Course;
 use Modules\Section\Entities\Section;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
@@ -26,13 +29,11 @@ class Teacher extends Authenticatable implements JWTSubject
         'password',
         'about',
         'profile',
-        'otp',
-        'expire_at',
 
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidde                                                                                                                                                                          8n for serialization.
      *
      * @var array<int, string>
      */
@@ -80,7 +81,10 @@ class Teacher extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = Hash::make($value);
     }
-
+    public function otp () :MorphOne
+    {
+        return $this->morphOne(Otp::class,'otpable');
+    }
     public function courses()
     {
         return $this->hasMany(Course::class, 'teacher_id');

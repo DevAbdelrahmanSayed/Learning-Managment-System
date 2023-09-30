@@ -8,5 +8,6 @@
     "Video": true,
     "ProfileTeacher": true,
     "File": true,
-    "Auth": true
+    "Auth": true,
+    "Student": true
 }

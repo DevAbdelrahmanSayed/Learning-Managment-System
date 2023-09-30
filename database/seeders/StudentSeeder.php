@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Modules\Teacher\Entities\Teacher;
 use Faker\Factory as FakerFactory;
+use Illuminate\Database\Seeder;
+use Modules\Student\Entities\Student;
+use Modules\Teacher\Entities\Teacher;
 
-class TeacherSeeder extends Seeder
+class StudentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -32,6 +33,6 @@ class TeacherSeeder extends Seeder
             ];
         }
 
-        Teacher::insert($data);
+        Student::insert($data);
     }
 }

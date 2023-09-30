@@ -28,7 +28,7 @@ class FileController extends Controller
         }
 
         $file = $storeFileAction->execute($section, $request->validated());
-        return ApiResponse::sendResponse(201, 'Your files uploaded successfully', ['fileId' => $file->id]);
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED, 'Your files uploaded successfully', ['fileId' => $file->id]);
 
 
     }

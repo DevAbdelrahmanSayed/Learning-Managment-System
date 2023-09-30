@@ -15,7 +15,7 @@
         <td align="center" bgcolor="#ffffff" style="padding: 40px 0;">
             <h2 style="margin: 0; color: #333333;">Welcome. {{$name}}</h2>
             <p style="margin: 20px 0 30px; color: #666666;">Please verify your email address to get started.</p>
-            <p style="margin: 20px 0 30px; color: #666666;">Your OTP is: <strong>{{ $otp }}</strong></p>
+            <p style="margin: 20px 0 30px; color: #666666;">Your OTP is: <strong>{{ $code }}</strong></p>
             <p style="margin: 20px 0 30px; color: #666666;">Thank you for choosing our platform!</p>
         </td>
     </tr>
