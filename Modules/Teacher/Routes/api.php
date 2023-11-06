@@ -16,9 +16,3 @@ use Modules\Teacher\Http\Controllers\TeacherController;
 
 Route::Apiresource('teachers', TeacherController::class)->middleware(['auth:teacher']);
 
-//Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
-//    Route::put('/', [TeacherController::class, 'index']);
-//    Route::get('/profile', [TeacherController::class, 'update']);
-//    Route::delete('/destroy', [TeacherController::class, 'destroy']);
-//
-//});

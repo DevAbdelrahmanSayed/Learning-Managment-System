@@ -16,6 +16,7 @@ class SectionResource extends JsonResource
     {
 
         return [
+            'course_id' => $this->courses->id,
             'section_id' => $this->id,
             'section_title' => $this->title,
             'section_description' => $this->description,

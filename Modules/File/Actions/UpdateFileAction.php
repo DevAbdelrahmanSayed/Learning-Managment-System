@@ -7,7 +7,7 @@ use Modules\File\Entities\File;
 use Modules\Section\Entities\Section;
 class UpdateFileAction
 {
-    public function execute(Section $section , File $file , array $fileData)
+    public function execute( File $file , array $fileData)
     {
         if (isset($fileData['fileUrl'])) {
             $filePath = (new StoreCourseFileAction())->execute($fileData['fileUrl']);
@@ -19,7 +19,7 @@ class UpdateFileAction
                 Storage::disk('s3')->delete("course_file/files/{$existingFilePath}");
             }
         }
-        $fileData['section_id'] = $section->id;
+
         $file->update($fileData);
         return $file;
     }

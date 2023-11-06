@@ -17,7 +17,7 @@ class StoreSectionRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:20',
-            'description' => 'required|string|min:3|max:255',
+            'course_id' => 'required|exists:courses,id'
         ];
 
     }

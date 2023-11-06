@@ -24,7 +24,7 @@ class OTP
 
         if ($userOtp && now()->lt($userOtp->expire_at) && $otp == $userOtp->code) {
             $user->email_verified_at = now();
-            $user->save(); // Save the user to update email_verified_at
+            $user->save();
             $userOtp->update(['code' => null]);
             return true;
         }

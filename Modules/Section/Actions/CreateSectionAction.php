@@ -7,10 +7,10 @@ use Modules\Section\Entities\Section;
 
 class CreateSectionAction
 {
-    public function execute(Course $course, array $sectionData)
+    public function execute( $course_ID, $teacher_id,$sectionData )
     {
-        $sectionData['teacher_id'] = $course->teacher_id;
-        $sectionData['course_id'] = $course->id;
+        $sectionData['teacher_id'] = $teacher_id;
+        $sectionData['course_id'] = $course_ID;
 
         $section = Section::create($sectionData);
 

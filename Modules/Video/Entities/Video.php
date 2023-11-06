@@ -16,7 +16,6 @@ class Video extends Model
         'description',
         'videoUrl',
         'section_id',
-        'course_id',
         'teacher_id'
     ];
 
@@ -28,6 +27,13 @@ class Video extends Model
     public function sections()
     {
         return $this->belongsTo(Section::class, 'section_id');
+
+    }
+    public function scopeFilter($query, array $filters)
+    {
+       $query->when(isset($filters['teacher_id']), function ($query) use ($filters){
+           $query->where('teacher_id',$filters['teacher_id']);
+       });
 
     }
 }

@@ -8,7 +8,7 @@ class GetCoursesWithPaginationAction
 {
     public function execute(array $filters = [])
     {
-        $courses = Course::filter($filters)->with('teachers')->latest()->paginate(2);
+        $courses = Course::filter($filters)->with('teachers')->latest()->paginate(1000);
 
         $courses = $this->paginate($courses);
 

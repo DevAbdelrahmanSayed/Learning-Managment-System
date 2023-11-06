@@ -14,4 +14,5 @@ use Modules\Section\Http\Controllers\SectionController;
 |
 */
 
-Route::apiResource('courses/{course}/sections', SectionController::class)->middleware(['auth:teacher', 'Verify:teacher']);
+Route::apiResource('courses/sections', SectionController::class)->except('index')->middleware(['auth:teacher', 'verified']);
+Route::get('courses/{course}/sections', [SectionController::class, 'getSection'])->middleware(['auth:teacher', 'verified']);

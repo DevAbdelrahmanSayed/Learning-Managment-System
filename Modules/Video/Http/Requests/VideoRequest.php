@@ -17,8 +17,9 @@ class VideoRequest extends FormRequest
     {
         return [
             'visible' => 'required|boolean',
+            'section_id' => 'numeric|exists:sections,id',
             'title' => 'required|string|max:255',
-            'videoUrl' => 'required|file|mimes:mp4,avi,mov', // Assuming you accept MP4, AVI, and MOV video formats with a max size of 300 MB (adjust max size as needed).
+            'videoUrl' => 'required|file|max:65536|mimes:mp4,avi,mov', // Assuming you accept MP4, AVI, and MOV video formats with a max size of 300 MB (adjust max size as needed).
 
         ];
     }

@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
     Route::post('register', RegisterController::class);
 });
 Route::post('verify-otp', [OtpController::class, 'verify'])->middleware('auth:teacher,student');
-Route::post('resend-otp', [OtpController::class, 'resendOtp'])->middleware('auth');
+Route::post('resend-otp', [OtpController::class, 'resendOtp'])->middleware('auth:teacher,student');
 
 Route::post('teacher/logout', [SessionController::class, 'destroy'])->middleware(['auth:teacher', 'verified']);
 Route::post('student/logout', [SessionController::class, 'destroy'])->middleware(['auth:student', 'verified']);

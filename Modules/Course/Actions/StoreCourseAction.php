@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Modules\Course\Entities\Course;
 use Modules\Teacher\Entities\Teacher;
 
+
 class StoreCourseAction
 {
     public function execute(array $courseData, Teacher $teacher)

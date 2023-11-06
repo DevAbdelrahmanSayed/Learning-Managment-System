@@ -9,5 +9,8 @@
     "ProfileTeacher": true,
     "File": true,
     "Auth": true,
-    "Student": true
+    "Student": true,
+    "Comment": true,
+    "LIke": true,
+    "Like": true
 }

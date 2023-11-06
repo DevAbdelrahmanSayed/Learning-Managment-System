@@ -17,7 +17,7 @@ class FileRequest extends FormRequest
     {
         return [
             'fileUrl' => 'required|file|mimes:pdf,doc,docx',
-            'section_id' => 'required|Integer|exists:sections,id',
+
         ];
     }
 

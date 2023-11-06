@@ -9,10 +9,10 @@ class FileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'fileId' => $this->id,
-            'fileUrl' => $this->fileUrl,
-            'fileCreatedAt' => $this->created_at,
-            'fileUpdatedAt' => $this->updated_at,
+            'file_id' => $this->id,
+            'file_url' => $this->fileUrl,
+            'file_createdat' => $this->created_at,
+            'file_updatedat' => $this->updated_at,
         ];
     }
 }

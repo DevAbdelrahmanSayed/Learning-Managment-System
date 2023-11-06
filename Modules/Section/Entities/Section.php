@@ -14,7 +14,6 @@ class Section extends Model
 
     protected $fillable = [
         'title',
-        'description',
         'course_id',
         'teacher_id',
     ];
@@ -39,6 +38,16 @@ class Section extends Model
     public function files()
     {
         return $this->hasMany(File::class, 'section_id');
+
+    }
+    public function scopeFilter($query, array $filters){
+        $query->when(isset($filters['teacher_id']), function ($query) use ($filters) {
+            $query->where('teacher_id', $filters['teacher_id']);
+        });
+
+
+
+
 
     }
 }
