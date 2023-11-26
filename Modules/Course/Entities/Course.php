@@ -43,4 +43,5 @@ class Course extends Model
             $query->where('teacher_id', $filters['teacher_id']);
         });
     }
+
 }

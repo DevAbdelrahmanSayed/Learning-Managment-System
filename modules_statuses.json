@@ -12,5 +12,7 @@
     "Student": true,
     "Comment": true,
     "LIke": true,
-    "Like": true
+    "Like": true,
+    "FavouriteCourse": true,
+    "FavourtieCourse": true
 }

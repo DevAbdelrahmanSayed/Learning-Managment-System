@@ -3,14 +3,16 @@
 namespace Modules\Student\Entities;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\HasApiTokens;
 use Modules\Auth\Entities\Otp;
+use Laravel\Sanctum\HasApiTokens;
+use Modules\Course\Entities\Course;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
+use Modules\Favourite\Entities\FavouriteCourse;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Student extends Authenticatable implements JWTSubject
 
@@ -81,5 +83,9 @@ class Student extends Authenticatable implements JWTSubject
     protected static function newFactory()
     {
         return \Modules\Student\Database\factories\StudentFactory::new();
+    }
+
+    public function favouriteCourses(){
+        return $this->belongsToMany(Course::class, 'student_favourtie_courses' , 'student_id' , 'course_id');
     }
 }
