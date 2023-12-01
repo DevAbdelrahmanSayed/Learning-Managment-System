@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Modules\Comment\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/comment', function (Request $request) {
-    return $request->user();
-});
+
+Route::post('course/comment', [CommentController::class, 'store'])->middleware(['auth:teacher']);

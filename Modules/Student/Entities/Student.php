@@ -5,6 +5,7 @@ namespace Modules\Student\Entities;
 
 use Modules\Auth\Entities\Otp;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Comment\Entities\Comment;
 use Modules\Course\Entities\Course;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -76,16 +77,21 @@ class Student extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = Hash::make($value);
     }
-    public function otp () :MorphMany
+    public function otp () : MorphMany
     {
         return $this->morphMany(Otp::class,'otpable');
     }
-    protected static function newFactory()
+
+    public function comments():MorphMany
     {
-        return \Modules\Student\Database\factories\StudentFactory::new();
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     public function favouriteCourses(){
         return $this->belongsToMany(Course::class, 'student_favourtie_courses' , 'student_id' , 'course_id');
+    }
+    protected static function newFactory()
+    {
+        return \Modules\Student\Database\factories\StudentFactory::new();
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Section\Http\Requests;
+namespace Modules\Comment\Http\Requests;
 
 use App\Helpers\ApiValidationHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class IndexSectionRequest extends FormRequest
+class CommentRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,8 +16,9 @@ class IndexSectionRequest extends FormRequest
     public function rules()
     {
         return [
-            'teacher_id' => 'numeric|exists:teachers,id',
-            'course_id' => 'numeric|exists:courses,id',
+            'course_id' => 'required|integer',
+            'comment_text' => 'required|string',
+            'parent_comment_id' => 'nullable|integer',
         ];
     }
     protected function failedValidation(Validator $validator)
