@@ -46,12 +46,12 @@ class FavouriteCourseController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     * @param int $courseId
      * @return Renderable
      */
-    public function destroy($id)
+    public function destroy($courseId)
     {
-        auth('student')->user()->favouriteCourses()->detach($id);
+        auth('student')->user()->favouriteCourses()->detach($courseId);
 
         return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course removed successfully from favourites');
     }
