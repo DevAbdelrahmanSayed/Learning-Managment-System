@@ -88,7 +88,7 @@ class Student extends Authenticatable implements JWTSubject
     }
 
     public function favouriteCourses(){
-        return $this->belongsToMany(Course::class, 'student_favourtie_courses' , 'student_id' , 'course_id');
+        return $this->belongsToMany(Course::class, 'student_favourite_courses' , 'student_id' , 'course_id');
     }
     protected static function newFactory()
     {

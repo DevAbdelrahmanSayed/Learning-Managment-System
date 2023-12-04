@@ -2,9 +2,14 @@
 
 namespace Modules\FavouriteCourse\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Course\Transformers\CourseResource;
+use Modules\FavouriteCourse\Http\Requests\StoreFavouriteCourseRequest;
+use Spatie\FlareClient\Api;
 
 class FavouriteCourseController extends Controller
 {
@@ -14,16 +19,12 @@ class FavouriteCourseController extends Controller
      */
     public function index()
     {
-        return view('favouritecourse::index');
-    }
+        $studentFavouriteCourses = auth('student')->user()->favouriteCourses;
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('favouritecourse::create');
+        if (count($studentFavouriteCourses) == 0) {
+            return ApiResponse::sendResponse(JsonResponse::HTTP_NOT_FOUND, 'No favourite courses found ');
+        }
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Favourite courses retrieved successfully.', CourseResource::collection($studentFavouriteCourses));
     }
 
     /**
@@ -31,40 +32,16 @@ class FavouriteCourseController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(StoreFavouriteCourseRequest $request)
     {
-        //
-    }
+        $courseId = $request->get('course_id');
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('favouritecourse::show');
-    }
+        auth('student')->user()->favouriteCourses()->sync([$courseId => [
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]]);;
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('favouritecourse::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return ApiResponse::sendResponse(JsonResponse::HTTP_CREATED , 'Course added to favourites succefully.');
     }
 
     /**
@@ -74,6 +51,8 @@ class FavouriteCourseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        auth('student')->user()->favouriteCourses()->detach($id);
+
+        return ApiResponse::sendResponse(JsonResponse::HTTP_OK, 'Course removed successfully from favourites');
     }
 }

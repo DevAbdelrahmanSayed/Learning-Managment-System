@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create("sutdent_favourite_courses", function (Blueprint $table) {
+        Schema::create("student_favourite_courses", function (Blueprint $table) {
             $table->foreignId('student_id');
             $table->foreignId('course_id');
             $table->timestamps();
